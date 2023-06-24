@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flash Cards App</title>
+    <script
+      src="https://kit.fontawesome.com/284cdbd282.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- main container for cards -->
+    <div class="cardsContainer">
+      <div class="card">desc</div>
+    </div>
+
+    <button class="addCard">
+      Add Card
+      <i class="fa fa-plus" aria-hidden="true"></i>
+    </button>
+
+    <!-- add card menu -->
+    <div class="addCardMenu hideAddCardMenu">
+      <h2>Add Card <span class="cardSide">(Front)</span></h2>
+      <!-- Card Preview -->
+      <div class="tempCard">
+        <textarea class="cardInfo" placeholder="Add new card"></textarea>
+      </div>
+
+      <div class="tempCardBack hideCard">
+        <textarea class="cardDesc" placeholder="Add definition/description"></textarea>
+      </div>
+
+      <!-- buttons -->
+      <div class="btnContainer">
+        <button class="flipBtn">Flip Over</button>
+        <button class="addBtn">Add Card</button>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
