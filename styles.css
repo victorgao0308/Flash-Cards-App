@@ -22,7 +22,7 @@
 
 .addCardMenu{
     width: 30rem;
-    max-width: 100%;
+    max-width: 90%;
     height: 15rem;
     max-height: 100%;
     border: 3px solid black;
@@ -88,5 +88,14 @@
     width: 10rem;
     border: 2px solid black;
     text-align: center;
+    position: relative;
 }
+
+.flipCardBtn {
+    position:absolute;
+    top:0;
+    right:0;
+}
+
+
 
