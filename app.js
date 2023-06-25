@@ -11,13 +11,13 @@ const cardSide = document.querySelector(".cardSide");
 const cardInfo = document.querySelector(".cardInfo");
 const cardDesc = document.querySelector(".cardDesc");
 
+
 let id = 1;
 let cards = [];
+let side = "(Front)";
 
 addCard.addEventListener("click", () => {
   addCardMenu.classList.toggle("hideAddCardMenu");
-
-  let side = "(Front)";
 
   flipBtn.addEventListener("click", () => {
     cardFront.classList.toggle("hideCard");
@@ -31,10 +31,20 @@ addCard.addEventListener("click", () => {
 
     cardSide.innerHTML = side;
   });
+
+
 });
+
 
 addBtn.addEventListener("click", () => {
   addNewCard();
+
+  if (side === "(Back)") {
+    side = "(Front)";
+    cardSide.innerHTML = side;
+    cardFront.classList.toggle("hideCard");
+    cardBack.classList.toggle("hideCard");
+  }
 });
 
 
@@ -47,7 +57,16 @@ function addNewCard() {
   let newCard = document.createElement("div");
   newCard.classList.add("card");
 
-  newCard.innerHTML = `<span class="displayCard">${cardValue}</span>`;
+
+  let displayCard = document.createElement("span");
+  displayCard.classList.add("displayCard");
+  displayCard.innerHTML = cardValue;
+  newCard.appendChild(displayCard);
+
+  let displayCardBack = document.createElement("span");
+  displayCardBack.classList.add("displayCardBack", "hideCardSide");
+  displayCardBack.innerHTML = cardBackValue;
+  newCard.appendChild(displayCardBack);
 
   let flipCardBtn = document.createElement('button');
   flipCardBtn.classList.add("flipCardBtn");
@@ -58,9 +77,10 @@ function addNewCard() {
 
 
   flipCardBtn.addEventListener('click', () => {
-    console.log('clicked on card' + card.id);
+    displayCard.classList.toggle('hideCardSide');
+    displayCardBack.classList.toggle('hideCardSide');
   })
-  
+
   cardInfo.value = "";
   cardDesc.value = "";
 
