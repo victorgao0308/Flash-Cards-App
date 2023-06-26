@@ -1,5 +1,3 @@
-import { Card } from "./card.js";
-
 const addCard = document.querySelector(".addCard");
 const addCardMenu = document.querySelector(".addCardMenu");
 const cardFront = document.querySelector(".tempCard");
@@ -77,6 +75,15 @@ function addNewCard() {
 
   cardInfo.value = "";
   cardDesc.value = "";
+}
+
+
+class Card {
+  constructor(id, front, back) {
+      this.id = id;
+      this.front = front;
+      this.back = back;
+  }
 }
 
 

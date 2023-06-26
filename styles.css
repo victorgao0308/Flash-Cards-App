@@ -201,3 +201,8 @@ li a:hover {
 .addSetInput {
   outline: none;
 }
+
+
+.hide {
+  display: none;
+}

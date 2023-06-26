@@ -11,19 +11,17 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-
-
     <!-- top nav bar -->
     <ul>
       <li><a href="index.html">Home</a></li>
-      <li><a class="activeLink" href="mySets.html">My Sets</a></li>
-      <li><a href="">tab3</a></li>
-      <li><a href="">tab4</a></li>
+      <li><a class="activeLink mySets" href="mySets.html">My Sets</a></li>
+      <li><a class = "currentSetNav activeLink hide"><span class = "currentSet"></span></a></li>
     </ul>
-    <h2>My Sets</h2>
 
-    <p>click on a set to view/edit it</p>
-
+    <div class="setHeader">
+      <h2>My Sets</h2>
+      <p>click on a set to view/edit it</p>
+    </div>
 
     <!-- add set button -->
     <button class="addSetBtn">
@@ -40,12 +38,51 @@
       <h2>Create New Set</h2>
       <div class="addSetContainer">
         <h3>Set Name</h3>
-        <input type="text" class = "addSetInput" placeholder = "Enter Set Name">
+        <input type="text" class="addSetInput" placeholder="Enter Set Name" />
       </div>
       <button class="createSetBtn">Create Set</button>
     </div>
 
+    <!-- add cards -->
+    <div class="cardsDiv hide">
+      <!-- add card button -->
+      <button class="addCard">
+        Add Card
+        <i class="fa fa-plus" aria-hidden="true"></i>
+      </button>
+
+      <!-- main container for cards -->
+      <div class="cardsContainer"></div>
+
+      <!-- add card menu -->
+      <div class="addCardMenu hideAddCardMenu">
+        <h2>Add Card <span class="cardSide">(Front)</span></h2>
+        <!-- Card Preview -->
+        <div class="tempCard">
+          <textarea
+            name="cardInfo"
+            class="cardInfo"
+            placeholder="Add new card"
+          ></textarea>
+        </div>
+
+        <div class="tempCardBack hideCard">
+          <textarea
+            name="cardDesc"
+            class="cardDesc"
+            placeholder="Add definition/description"
+          ></textarea>
+        </div>
+
+        <!-- buttons -->
+        <div class="btnContainer">
+          <button class="flipBtn">Flip Over</button>
+          <button class="addBtn">Add Card</button>
+        </div>
+      </div>
+    </div>
 
     <script type="module" src="set.js"></script>
+    <script type="module" src="app.js"></script>
   </body>
 </html>
