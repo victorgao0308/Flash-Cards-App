@@ -206,3 +206,8 @@ li a:hover {
 .hide {
   display: none;
 }
+
+.clearSets {
+  height: 2rem;
+  display: inline;
+}
