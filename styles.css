@@ -188,6 +188,9 @@ li a:hover {
   text-align: center;
 }
 
+.set:hover {
+  cursor: pointer;
+}
 .set h2 {
   position: absolute;
   top: 50%;
