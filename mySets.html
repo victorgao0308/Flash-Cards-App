@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Sets</title>
+    <script
+      src="https://kit.fontawesome.com/284cdbd282.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- top nav bar -->
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a class="activeLink" href="mySets.html">My Sets</a></li>
+      <li><a href="">tab3</a></li>
+      <li><a href="">tab4</a></li>
+    </ul>
+    <h2>My Sets</h2>
+
+
+    <!-- add set button -->
+    <button class="addSetBtn">
+      Add New Set
+      <div></div>
+      <i class="fa fa-plus" aria-hidden="true"></i>
+    </button>
+
+    <!-- sets container -->
+    <div class="setsContainer"></div>
+
+    <!-- add set menu -->
+    <div class="addSetMenu hideAddSetMenu">
+      <h2>Create New Set</h2>
+      <div class="addSetContainer">
+        <h3>Set Name</h3>
+        <input type="text" class = "addSetInput" placeholder = "Enter Set Name">
+      </div>
+      <button class="createSetBtn">Create Set</button>
+    </div>
+
+
+    <script type="module" src="set.js"></script>
+  </body>
+</html>

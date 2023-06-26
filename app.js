@@ -11,28 +11,22 @@ const cardSide = document.querySelector(".cardSide");
 const cardInfo = document.querySelector(".cardInfo");
 const cardDesc = document.querySelector(".cardDesc");
 
-
 let id = 1;
 let cards = [];
 let side = "(Front)";
 
 addCard.addEventListener("click", () => {
   addCardMenu.classList.toggle("hideAddCardMenu");
-
   flipBtn.addEventListener("click", () => {
     cardFront.classList.toggle("hideCard");
     cardBack.classList.toggle("hideCard");
-
     if (side === "(Front)") {
       side = "(Back)";
     } else {
       side = "(Front)";
     }
-
     cardSide.innerHTML = side;
   });
-
-
 });
 
 
@@ -83,5 +77,6 @@ function addNewCard() {
 
   cardInfo.value = "";
   cardDesc.value = "";
-
 }
+
+
