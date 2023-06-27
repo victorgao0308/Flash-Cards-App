@@ -24,9 +24,13 @@ const editCardBack = document.querySelector(".editCardBack");
 const editCardInfo = document.querySelector(".editCardInfo");
 const editCardDesc = document.querySelector(".editCardDesc");
 
+const editCards = document.querySelector(".editCards");
+
 let setId = 1;
 let cardId = 1;
 let side = "(Front)";
+
+let showEditBtn = false;
 
 // keep track of which set the user is in
 let setUserIsIn;
@@ -82,17 +86,20 @@ function addNewCard() {
   cardId += 1;
   let newCard = document.createElement("div");
   newCard.classList.add("card");
-  let displayCard = document.createElement("span");
+  let displayCard = document.createElement("div");
   displayCard.classList.add("displayCard");
   displayCard.innerHTML = cardValue;
   newCard.appendChild(displayCard);
-  let displayCardBack = document.createElement("span");
+  let displayCardBack = document.createElement("div");
   displayCardBack.classList.add("displayCardBack", "hideCardSide");
   displayCardBack.innerHTML = cardBackValue;
   newCard.appendChild(displayCardBack);
 
   let editBtn = document.createElement("button");
-  editBtn.classList.add("editCardBtn");
+  editBtn.classList.add("editCardBtn", "hide");
+  if (showEditBtn) {
+    editBtn.classList.remove("hide");
+  }
   editBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
   newCard.appendChild(editBtn);
 
@@ -238,17 +245,17 @@ function loadCards(set) {
   cards.forEach((card) => {
     let newCard = document.createElement("div");
     newCard.classList.add("card");
-    let displayCard = document.createElement("span");
+    let displayCard = document.createElement("div");
     displayCard.classList.add("displayCard");
     displayCard.innerHTML = card.front;
     newCard.appendChild(displayCard);
-    let displayCardBack = document.createElement("span");
+    let displayCardBack = document.createElement("div");
     displayCardBack.classList.add("displayCardBack", "hideCardSide");
     displayCardBack.innerHTML = card.back;
     newCard.appendChild(displayCardBack);
 
     let editBtn = document.createElement("button");
-    editBtn.classList.add("editCardBtn");
+    editBtn.classList.add("editCardBtn", "hide");
     editBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
     newCard.appendChild(editBtn);
 
@@ -276,3 +283,28 @@ function loadCards(set) {
     cardId++;
   });
 }
+
+
+// toggle edit button on all cards
+editCards.addEventListener('click', () => {
+  showEditBtn = !showEditBtn;
+  const editBtns = document.querySelectorAll(".editCardBtn");
+
+  let flag = "hideAll";
+  if (editBtns.length > 0) {
+    let btn = document.querySelector(".editCardBtn");
+    if (btn.classList.contains("hide")) flag = "showAll"
+  }
+  editBtns.forEach(btn => {
+    if (flag === "showAll") {
+      if (btn.classList.contains("hide")) {
+        btn.classList.remove("hide")
+      }
+    }
+    else {
+      if (!btn.classList.contains("hide")) {
+        btn.classList.add("hide");
+      }
+    }
+  })
+})
