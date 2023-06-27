@@ -17,7 +17,6 @@ const setName = document.querySelector(".addSetInput");
 const cardsDiv = document.querySelector(".cardsDiv");
 const clearSetsBtn = document.querySelector(".clearSetsBtn");
 
-
 let setId = 1;
 let sets = [];
 
@@ -25,9 +24,8 @@ let id = 1;
 let cards = [];
 let side = "(Front)";
 
-
 // keep track of which set the user is in
-let currentSet;
+let setUserIsIn;
 
 // classes
 class Card {
@@ -45,7 +43,6 @@ class Set {
     this.name = name;
   }
 }
-
 
 // toggle add card menu
 addCard.addEventListener("click", () => {
@@ -72,7 +69,6 @@ addBtn.addEventListener("click", () => {
     cardBack.classList.toggle("hideCard");
   }
 });
-
 
 // add a new card to a set
 function addNewCard() {
@@ -103,13 +99,12 @@ function addNewCard() {
 
   cardInfo.value = "";
   cardDesc.value = "";
-  addCardToLocalStorage(card, currentSet);
+  addCardToLocalStorage(card, setUserIsIn);
 }
 
 addSetBtn.addEventListener("click", () => {
   addSetMenu.classList.toggle("hideAddSetMenu");
 });
-
 
 // handle creation of a new set
 createSetBtn.addEventListener("click", () => {
@@ -147,12 +142,14 @@ function displaySet(set) {
   currentSet.innerHTML = set.name;
   setHeader.innerHTML = `<h2>${set.name}</h2>
   <p>${set.id}</p>`;
+  setUserIsIn = set;
   getCardsFromLocalStorage(set);
+  loadCards(set);
 }
 
 // add set to local storage
 function addSetToLocalStorage(set) {
-  localStorage.setItem("SET: "+ set.id, JSON.stringify(set));
+  localStorage.setItem("SET: " + set.id, JSON.stringify(set));
 }
 
 // retrieve sets from local storage
@@ -168,16 +165,17 @@ window.addEventListener("load", loadSets);
 function loadSets() {
   let keys = Object.keys(localStorage);
 
-
   for (let i = 1; i <= keys.length; i++) {
     let key = "SET: " + i;
-    let storageSet = localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)) : [];
-    let set = document.createElement('div');
-    set.classList.add('set');
+    let storageSet = localStorage.getItem(key)
+      ? JSON.parse(localStorage.getItem(key))
+      : [];
+    let set = document.createElement("div");
+    set.classList.add("set");
 
     set.innerHTML = `<h2>${storageSet.name}</h2>`;
     setsContainer.appendChild(set);
-  
+
     set.addEventListener("click", () => {
       let curSet = storageSet;
       displaySet(curSet);
@@ -194,20 +192,48 @@ clearSetsBtn.addEventListener("click", () => {
   setId = 1;
 });
 
-
-
 // add card to local storage
 function addCardToLocalStorage(card, set) {
   let cards = getCardsFromLocalStorage(set);
   cards.push(card);
-}
 
+  let getSet = JSON.parse(localStorage.getItem("SET: " + set.id));
+  getSet.cards = cards;
+  localStorage.setItem("SET: " + set.id, JSON.stringify(getSet));
+}
 
 // get cards from local storage
 function getCardsFromLocalStorage(set) {
   let getSet = JSON.parse(localStorage.getItem("SET: " + set.id));
   let cards = getSet.cards;
-  console.log(cards);
   return cards;
 }
 
+// load and display cards
+function loadCards(set) {
+  let cards = getCardsFromLocalStorage(set);
+
+  cards.forEach((card) => {
+    let newCard = document.createElement("div");
+    newCard.classList.add("card");
+    let displayCard = document.createElement("span");
+    displayCard.classList.add("displayCard");
+    displayCard.innerHTML = card.front;
+    newCard.appendChild(displayCard);
+    let displayCardBack = document.createElement("span");
+    displayCardBack.classList.add("displayCardBack", "hideCardSide");
+    displayCardBack.innerHTML = card.back;
+    newCard.appendChild(displayCardBack);
+    let flipCardBtn = document.createElement("button");
+    flipCardBtn.classList.add("flipCardBtn");
+    flipCardBtn.innerHTML = `<i class="fa fa-repeat" aria-hidden="true"></i>`;
+    newCard.appendChild(flipCardBtn);
+    cardsContainer.appendChild(newCard);
+    flipCardBtn.addEventListener("click", () => {
+      displayCard.classList.toggle("hideCardSide");
+      displayCardBack.classList.toggle("hideCardSide");
+    });
+
+    id++;
+  });
+}
