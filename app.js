@@ -303,7 +303,7 @@ clearSetsBtn.addEventListener("click", () => {
 
 // add card to local storage
 function addCardToLocalStorage(card, set) {
-  let cards = Array.from(getCardsFromLocalStorage(set));
+  let cards = getCardsFromLocalStorage(set);
   cards.push(card);
   let getSet = JSON.parse(localStorage.getItem("SET: " + set.setId));
   getSet.cards = cards;
@@ -313,6 +313,7 @@ function addCardToLocalStorage(card, set) {
 // get cards from a specific set from local storage
 function getCardsFromLocalStorage(set) {
   let getSet = JSON.parse(localStorage.getItem("SET: " + set.setId));
+  console.log(getSet);
   let cards = getSet.cards;
   return cards;
 }
@@ -321,7 +322,7 @@ function getCardsFromLocalStorage(set) {
 function loadCards(set) {
   cardId = 1;
   let cards = getCardsFromLocalStorage(set);
-  // TODO: redo this
+  console.log(cards);
 }
 
 // toggle edit button on all cards
@@ -350,9 +351,11 @@ editCards.addEventListener("click", () => {
 // edit card in local storage
 function editCardLocalStorage(card, set) {
   let cards = getCardsFromLocalStorage(set);
+
   let cardId = card.cardId - 1;
   let setId = set.setId;
 
   cards[cardId] = card;
-  localStorage.setItem("SET: " + setId, JSON.stringify(cards));
+  set.cards = cards;
+  localStorage.setItem("SET: " + setId, JSON.stringify(set));
 }
