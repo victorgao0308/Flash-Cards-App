@@ -28,7 +28,11 @@ const editSide = document.querySelector(".editSide");
 const editBtnContainer = document.querySelector(".editBtnContainer");
 
 const closeAddCardMenu = document.querySelector(".closeAddCardMenu");
+
+const editFlipBtn = document.querySelector(".editFlipBtn");
+const editDoneBtn = document.querySelector(".editDoneBtn");
 const closeEditCardMenu = document.querySelector(".closeEditCardMenu");
+
 
 let setId = 1;
 let cardId = 1;
@@ -45,15 +49,84 @@ let setUserIsIn;
 // classes
 class Card {
   constructor(cardId, front, back) {
+    var that = this;
     this.cardId = cardId;
     this.front = front;
     this.back = back;
+
+    // create the card div and add it to the cards container
+    this.cardElement = document.createElement("div");
+    this.cardElement.classList.add("card");
+    this.cardElement.innerHTML = `<div class="displayCard" id = "cardFront ${cardId}">${front}</div><div class="displayCardBack hideCardSide" id = "cardBack ${cardId}">${back}</div><button class="editCardBtn hide" id = "cardEditBtn ${cardId}"><i class="fa-solid fa-pen-to-square"></i></button>`;
+    cardsContainer.appendChild(this.cardElement);
+
+    // grab the elements
+    this.editBtn = document.getElementById("cardEditBtn " + cardId);
+    this.cardFront = document.getElementById("cardFront " + cardId);
+    this.cardBack = document.getElementById("cardBack " + cardId);
+
+    // add the edit button if it is toggled when adding a new card
+    if (showEditBtn) {
+      this.editBtn.classList.remove("hide");
+    }
+
+    // allow user to click the card to flip it
+    this.cardElement.addEventListener("click", () => {
+      this.cardFront.classList.toggle("hideCardSide");
+      this.cardBack.classList.toggle("hideCardSide");
+    });
+
+    // edit card
+    this.editBtn.addEventListener("click", () => {
+      if (!editCardMenu.classList.contains("hide")) {
+        return;
+      }
+      editCardMenu.classList.remove("hide");
+
+      // default to editing the front of a card
+      if (editSideVar === "(Back)") {
+        editSideVar = "(Front)";
+        editCardFront.classList.toggle("hide");
+        editCardBack.classList.toggle("hide");
+      }
+      editSide.innerHTML = editSideVar;
+
+      // prevent flipping the card when clicking the edit button
+      this.cardFront.classList.toggle("hideCardSide");
+      this.cardBack.classList.toggle("hideCardSide");
+
+      // fill in edit menu with card contents
+      editCardInfo.innerHTML = this.front;
+      editCardDesc.innerHTML = this.back;
+
+      editDoneBtn.addEventListener("click", helper);
+
+      function helper() {
+        that.editCard();
+      }
+
+      // close edit menu
+      closeEditCardMenu.addEventListener("click", () => {
+        editCardMenu.classList.add("hide");
+        editDoneBtn.removeEventListener("click", helper);
+      });
+
+    });
   }
 
   // edit card
-  editCard(newFront, newBack) {
-    this.front = newFront;
-    this.back = newBack;
+  editCard() {
+    console.log(this)
+
+    this.newFront = editCardInfo.value;
+    this.newBack = editCardDesc.value;
+
+    this.front = this.newFront;
+    this.back = this.newBack;
+    this.cardFront.innerHTML = this.newFront;
+    this.cardBack.innerHTML = this.newBack;
+
+    editCardLocalStorage(this, setUserIsIn);
   }
 }
 
@@ -102,6 +175,10 @@ addBtn.addEventListener("click", () => {
     cardFront.classList.toggle("hideCard");
     cardBack.classList.toggle("hideCard");
   }
+
+  // reset the add card menu
+  cardInfo.value = "";
+  cardDesc.value = "";
 });
 
 // add a new card to a set
@@ -112,98 +189,25 @@ function addNewCard() {
   cards.push(card);
   cardId += 1;
 
-  let newCard = document.createElement("div");
-  newCard.classList.add("card");
-  newCard.innerHTML = `<div class="displayCard" id = "cardFront ${card.cardId}">${cardValue}</div><div class="displayCardBack hideCardSide" id = "cardBack ${card.cardId}">${cardBackValue}</div><button class="editCardBtn hide" id = "cardEditBtn ${card.cardId}"><i class="fa-solid fa-pen-to-square"></i></button>`;
-
-  cardsContainer.appendChild(newCard);
-
-  let editBtn = document.getElementById("cardEditBtn " + card.cardId);
-  let cardFront = document.getElementById("cardFront " + card.cardId);
-  let cardBack = document.getElementById("cardBack " + card.cardId);
-
-  if (showEditBtn) {
-    editBtn.classList.remove("hide");
-  }
-
-  newCard.addEventListener("click", () => {
-    cardFront.classList.toggle("hideCardSide");
-    cardBack.classList.toggle("hideCardSide");
-  });
-
-  cardInfo.value = "";
-  cardDesc.value = "";
+  // add card to local storage
   addCardToLocalStorage(card, setUserIsIn);
-
-  editBtn.addEventListener("click", editCardFunction);
-
-  function editCardFunction() {
-    if (!editCardMenu.classList.contains("hide")) {
-      return;
-    }
-    editCardMenu.classList.remove("hide");
-
-    // default to editing the front of a card
-    if (editSideVar === "(Back)") {
-      editSideVar = "(Front)";
-      editCardFront.classList.toggle("hide");
-      editCardBack.classList.toggle("hide");
-    }
-    editSide.innerHTML = editSideVar;
-
-    // prevent flipping the card when clicking the edit button
-    cardFront.classList.toggle("hideCardSide");
-    cardBack.classList.toggle("hideCardSide");
-
-    let editBtnContainer = document.createElement("div");
-    editBtnContainer.classList.add("editBtnContainer");
-    editBtnContainer.innerHTML = `<button class="editFlipBtn" id = "editFlip ${card.cardId}">Flip Over</button>
-    <button class="editDoneBtn" id = "editDone ${card.cardId}">Done</button>`;
-
-    editCardMenu.appendChild(editBtnContainer);
-
-    const editFlipBtn = document.getElementById("editFlip " + card.cardId);
-    const editDoneBtn = document.getElementById("editDone " + card.cardId);
-
-    editCardInfo.innerHTML = card.front;
-    editCardDesc.innerHTML = card.back;
-    console.log(card.front, card.back);
-
-    editFlipBtn.addEventListener("click", editFlipBtnFunction);
-
-    function editFlipBtnFunction() {
-      editCardFront.classList.toggle("hide");
-      editCardBack.classList.toggle("hide");
-
-      if (editSideVar === "(Front)") {
-        editSideVar = "(Back)";
-      } else {
-        editSideVar = "(Front)";
-      }
-
-      editSide.innerHTML = editSideVar;
-    }
-
-    // TODO: update value in local storage
-    editDoneBtn.addEventListener("click", editDoneBtnFunction);
-
-    function editDoneBtnFunction() {
-      let newFront = editCardInfo.value;
-      let newBack = editCardDesc.value;
-      card.editCard(newFront, newBack);
-      cardFront.innerHTML = newFront;
-      cardBack.innerHTML = newBack;
-      editCardLocalStorage(card, setUserIsIn);
-    }
-
-    closeEditCardMenu.addEventListener("click", () => {
-      editCardMenu.classList.add("hide");
-      editFlipBtn.removeEventListener("click", editFlipBtnFunction);
-      editDoneBtn.removeEventListener("click", editDoneBtnFunction);
-    });
-  }
 }
 
+// flip card while editing
+editFlipBtn.addEventListener("click", () => {
+  editCardFront.classList.toggle("hide");
+  editCardBack.classList.toggle("hide");
+
+  if (editSideVar === "(Front)") {
+    editSideVar = "(Back)";
+  } else {
+    editSideVar = "(Front)";
+  }
+
+  editSide.innerHTML = editSideVar;
+});
+
+// toggle create set menu
 addSetBtn.addEventListener("click", () => {
   addSetMenu.classList.toggle("hideAddSetMenu");
 });
@@ -305,7 +309,7 @@ function addCardToLocalStorage(card, set) {
   localStorage.setItem("SET: " + set.setId, JSON.stringify(getSet));
 }
 
-// get cards from local storage
+// get cards from a specific set from local storage
 function getCardsFromLocalStorage(set) {
   let getSet = JSON.parse(localStorage.getItem("SET: " + set.setId));
   let cards = getSet.cards;
@@ -344,5 +348,6 @@ editCards.addEventListener("click", () => {
 
 // edit card in local storage
 function editCardLocalStorage(card, set) {
-  console.log(card, set);
+  let cards = getCardsFromLocalStorage(set);
+  console.log(cards);
 }
