@@ -99,7 +99,6 @@ class Card {
       // fill in edit menu with card contents
       editCardInfo.value = this.front;
       editCardDesc.value = this.back;
-      console.log(this.front, this.back)
 
       editDoneBtn.addEventListener("click", helper);
 
@@ -313,7 +312,6 @@ function addCardToLocalStorage(card, set) {
 // get cards from a specific set from local storage
 function getCardsFromLocalStorage(set) {
   let getSet = JSON.parse(localStorage.getItem("SET: " + set.setId));
-  console.log(getSet);
   let cards = getSet.cards;
   return cards;
 }
@@ -322,7 +320,6 @@ function getCardsFromLocalStorage(set) {
 function loadCards(set) {
   cardId = 1;
   let cards = getCardsFromLocalStorage(set);
-  console.log(cards);
 }
 
 // toggle edit button on all cards
