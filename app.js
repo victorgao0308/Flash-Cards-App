@@ -23,12 +23,15 @@ const editCardFront = document.querySelector(".editCardFront");
 const editCardBack = document.querySelector(".editCardBack");
 const editCardInfo = document.querySelector(".editCardInfo");
 const editCardDesc = document.querySelector(".editCardDesc");
+const editDoneBtn = document.querySelector(".editDoneBtn");
 
 const editCards = document.querySelector(".editCards");
 
 let setId = 1;
 let cardId = 1;
 let side = "(Front)";
+
+let cards = [];
 
 let showEditBtn = false;
 
@@ -41,6 +44,13 @@ class Card {
     this.cardId = cardId;
     this.front = front;
     this.back = back;
+  }
+
+  // edit card
+  editCard(newFront, newBack) {
+    this.front = newFront;
+    this.back = newBack;
+
   }
 }
 
@@ -83,29 +93,38 @@ function addNewCard() {
   const cardValue = cardInfo.value;
   const cardBackValue = cardDesc.value;
   let card = new Card(cardId, cardValue, cardBackValue);
+  cards.push(card);
   cardId += 1;
+
+
   let newCard = document.createElement("div");
   newCard.classList.add("card");
-  let displayCard = document.createElement("div");
-  displayCard.classList.add("displayCard");
-  displayCard.innerHTML = cardValue;
-  newCard.appendChild(displayCard);
-  let displayCardBack = document.createElement("div");
-  displayCardBack.classList.add("displayCardBack", "hideCardSide");
-  displayCardBack.innerHTML = cardBackValue;
-  newCard.appendChild(displayCardBack);
+  newCard.innerHTML = `<div class="displayCard" id = "cardFront ${card.cardId}">${cardValue}</div><div class="displayCardBack hideCardSide" id = "cardBack ${card.cardId}">${cardBackValue}</div><button class="editCardBtn hide" id = "cardEditBtn ${card.cardId}"><i class="fa-solid fa-pen-to-square"></i></button>`;
 
-  let editBtn = document.createElement("button");
-  editBtn.classList.add("editCardBtn", "hide");
+  cardsContainer.appendChild(newCard);
+
+  let editBtn = document.getElementById("cardEditBtn " + card.cardId);
+  let cardFront = document.getElementById("cardFront " + card.cardId);
+  let cardBack = document.getElementById("cardBack " + card.cardId);
+
   if (showEditBtn) {
     editBtn.classList.remove("hide");
   }
-  editBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
-  newCard.appendChild(editBtn);
+  
+  newCard.addEventListener("click", () => {
+    cardFront.classList.toggle("hideCardSide");
+    cardBack.classList.toggle("hideCardSide");
+  });
+
+  cardInfo.value = "";
+  cardDesc.value = "";
+  addCardToLocalStorage(card, setUserIsIn);
+
 
   editBtn.addEventListener("click", () => {
-    displayCard.classList.toggle("hideCardSide");
-    displayCardBack.classList.toggle("hideCardSide");
+    // prevent flipping the card when clicking the edit button
+    cardFront.classList.toggle("hideCardSide");
+    cardBack.classList.toggle("hideCardSide");
 
     editCardMenu.classList.toggle("hide");
 
@@ -118,15 +137,15 @@ function addNewCard() {
     });
   });
 
-  cardsContainer.appendChild(newCard);
-  newCard.addEventListener("click", () => {
-    displayCard.classList.toggle("hideCardSide");
-    displayCardBack.classList.toggle("hideCardSide");
-  });
+  editDoneBtn.addEventListener("click", () => {
+    console.log(displayCard);
+    let newFront = editCardInfo.value;
+    let newBack = editCardDesc.value;
+    card.editCard(newFront, newBack);
+    displayCard.innerHTML = newFront;
+    displayCardBack.innerHTML = newBack;
+  })
 
-  cardInfo.value = "";
-  cardDesc.value = "";
-  addCardToLocalStorage(card, setUserIsIn);
 }
 
 addSetBtn.addEventListener("click", () => {
@@ -241,70 +260,31 @@ function getCardsFromLocalStorage(set) {
 function loadCards(set) {
   cardId = 1;
   let cards = getCardsFromLocalStorage(set);
-
-  cards.forEach((card) => {
-    let newCard = document.createElement("div");
-    newCard.classList.add("card");
-    let displayCard = document.createElement("div");
-    displayCard.classList.add("displayCard");
-    displayCard.innerHTML = card.front;
-    newCard.appendChild(displayCard);
-    let displayCardBack = document.createElement("div");
-    displayCardBack.classList.add("displayCardBack", "hideCardSide");
-    displayCardBack.innerHTML = card.back;
-    newCard.appendChild(displayCardBack);
-
-    let editBtn = document.createElement("button");
-    editBtn.classList.add("editCardBtn", "hide");
-    editBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i>`;
-    newCard.appendChild(editBtn);
-
-    editBtn.addEventListener("click", () => {
-      displayCard.classList.toggle("hideCardSide");
-      displayCardBack.classList.toggle("hideCardSide");
-  
-      editCardMenu.classList.toggle("hide");
-  
-      editCardInfo.innerHTML = card.front;
-      editCardDesc.innerHTML = card.back;
-  
-      editFlipBtn.addEventListener("click", () => {
-        editCardFront.classList.toggle("hide");
-        editCardBack.classList.toggle("hide");
-      });
-    });
-
-    cardsContainer.appendChild(newCard);
-    newCard.addEventListener("click", () => {
-      displayCard.classList.toggle("hideCardSide");
-      displayCardBack.classList.toggle("hideCardSide");
-    });
-
-    cardId++;
-  });
+  // TODO: redo this
 }
 
-
 // toggle edit button on all cards
-editCards.addEventListener('click', () => {
+editCards.addEventListener("click", () => {
   showEditBtn = !showEditBtn;
   const editBtns = document.querySelectorAll(".editCardBtn");
 
   let flag = "hideAll";
   if (editBtns.length > 0) {
     let btn = document.querySelector(".editCardBtn");
-    if (btn.classList.contains("hide")) flag = "showAll"
+    if (btn.classList.contains("hide")) flag = "showAll";
   }
-  editBtns.forEach(btn => {
+  editBtns.forEach((btn) => {
     if (flag === "showAll") {
       if (btn.classList.contains("hide")) {
-        btn.classList.remove("hide")
+        btn.classList.remove("hide");
       }
-    }
-    else {
+    } else {
       if (!btn.classList.contains("hide")) {
         btn.classList.add("hide");
       }
     }
-  })
-})
+  });
+});
+
+// edit card in local storage
+function editCardLocalStorage(card, set) {}
