@@ -27,6 +27,9 @@ const editCards = document.querySelector(".editCards");
 const editSide = document.querySelector(".editSide");
 const editBtnContainer = document.querySelector(".editBtnContainer");
 
+const closeAddCardMenu = document.querySelector(".closeAddCardMenu");
+const closeEditCardMenu = document.querySelector(".closeEditCardMenu");
+
 let setId = 1;
 let cardId = 1;
 let side = "(Front)";
@@ -62,10 +65,17 @@ class Set {
   }
 }
 
-// toggle add card menu
+// show add card menu
 addCard.addEventListener("click", () => {
-  addCardMenu.classList.toggle("hideAddCardMenu");
-  flipBtn.addEventListener("click", () => {
+  if (!addCardMenu.classList.contains("hideAddCardMenu")) {
+    return;
+  }
+
+  addCardMenu.classList.remove("hideAddCardMenu");
+
+  flipBtn.addEventListener("click", flipBtnFunction);
+
+  function flipBtnFunction() {
     cardFront.classList.toggle("hideCard");
     cardBack.classList.toggle("hideCard");
     if (side === "(Front)") {
@@ -74,6 +84,12 @@ addCard.addEventListener("click", () => {
       side = "(Front)";
     }
     cardSide.innerHTML = side;
+  }
+
+  // close the add card menu
+  closeAddCardMenu.addEventListener("click", () => {
+    addCardMenu.classList.add("hideAddCardMenu");
+    flipBtn.removeEventListener("click", flipBtnFunction);
   });
 });
 
@@ -119,7 +135,14 @@ function addNewCard() {
   cardDesc.value = "";
   addCardToLocalStorage(card, setUserIsIn);
 
-  editBtn.addEventListener("click", () => {
+  editBtn.addEventListener("click", editCardFunction);
+
+  function editCardFunction() {
+    if (!editCardMenu.classList.contains("hide")) {
+      return;
+    }
+    editCardMenu.classList.remove("hide");
+
     // default to editing the front of a card
     if (editSideVar === "(Back)") {
       editSideVar = "(Front)";
@@ -132,8 +155,6 @@ function addNewCard() {
     cardFront.classList.toggle("hideCardSide");
     cardBack.classList.toggle("hideCardSide");
 
-    editCardMenu.classList.toggle("hide");
-
     let editBtnContainer = document.createElement("div");
     editBtnContainer.classList.add("editBtnContainer");
     editBtnContainer.innerHTML = `<button class="editFlipBtn" id = "editFlip ${card.cardId}">Flip Over</button>
@@ -141,13 +162,16 @@ function addNewCard() {
 
     editCardMenu.appendChild(editBtnContainer);
 
-    let editFlipBtn = document.getElementById("editFlip " + card.cardId);
-    let editDoneBtn = document.getElementById("editDone " + card.cardId);
+    const editFlipBtn = document.getElementById("editFlip " + card.cardId);
+    const editDoneBtn = document.getElementById("editDone " + card.cardId);
 
     editCardInfo.innerHTML = card.front;
     editCardDesc.innerHTML = card.back;
+    console.log(card.front, card.back);
 
-    editFlipBtn.addEventListener("click", () => {
+    editFlipBtn.addEventListener("click", editFlipBtnFunction);
+
+    function editFlipBtnFunction() {
       editCardFront.classList.toggle("hide");
       editCardBack.classList.toggle("hide");
 
@@ -158,17 +182,26 @@ function addNewCard() {
       }
 
       editSide.innerHTML = editSideVar;
-    });
+    }
 
     // TODO: update value in local storage
-    editDoneBtn.addEventListener("click", () => {
+    editDoneBtn.addEventListener("click", editDoneBtnFunction);
+
+    function editDoneBtnFunction() {
       let newFront = editCardInfo.value;
       let newBack = editCardDesc.value;
       card.editCard(newFront, newBack);
       cardFront.innerHTML = newFront;
       cardBack.innerHTML = newBack;
+      editCardLocalStorage(card, setUserIsIn);
+    }
+
+    closeEditCardMenu.addEventListener("click", () => {
+      editCardMenu.classList.add("hide");
+      editFlipBtn.removeEventListener("click", editFlipBtnFunction);
+      editDoneBtn.removeEventListener("click", editDoneBtnFunction);
     });
-  });
+  }
 }
 
 addSetBtn.addEventListener("click", () => {
@@ -310,4 +343,6 @@ editCards.addEventListener("click", () => {
 });
 
 // edit card in local storage
-function editCardLocalStorage(card, set) {}
+function editCardLocalStorage(card, set) {
+  console.log(card, set);
+}
