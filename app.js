@@ -81,6 +81,7 @@ class Card {
       if (!editCardMenu.classList.contains("hide")) {
         return;
       }
+
       editCardMenu.classList.remove("hide");
 
       // default to editing the front of a card
@@ -96,8 +97,9 @@ class Card {
       this.cardBack.classList.toggle("hideCardSide");
 
       // fill in edit menu with card contents
-      editCardInfo.innerHTML = this.front;
-      editCardDesc.innerHTML = this.back;
+      editCardInfo.value = this.front;
+      editCardDesc.value = this.back;
+      console.log(this.front, this.back)
 
       editDoneBtn.addEventListener("click", helper);
 
@@ -116,8 +118,6 @@ class Card {
 
   // edit card
   editCard() {
-    console.log(this)
-
     this.newFront = editCardInfo.value;
     this.newBack = editCardDesc.value;
 
@@ -186,7 +186,7 @@ function addNewCard() {
   const cardValue = cardInfo.value;
   const cardBackValue = cardDesc.value;
   let card = new Card(cardId, cardValue, cardBackValue);
-  cards.push(card);
+  setUserIsIn.cards.push(card);
   cardId += 1;
 
   // add card to local storage
@@ -278,6 +278,7 @@ function loadSets() {
     let storageSet = localStorage.getItem(key)
       ? JSON.parse(localStorage.getItem(key))
       : [];
+
     let set = document.createElement("div");
     set.classList.add("set");
 
@@ -302,7 +303,7 @@ clearSetsBtn.addEventListener("click", () => {
 
 // add card to local storage
 function addCardToLocalStorage(card, set) {
-  let cards = getCardsFromLocalStorage(set);
+  let cards = Array.from(getCardsFromLocalStorage(set));
   cards.push(card);
   let getSet = JSON.parse(localStorage.getItem("SET: " + set.setId));
   getSet.cards = cards;
@@ -349,5 +350,9 @@ editCards.addEventListener("click", () => {
 // edit card in local storage
 function editCardLocalStorage(card, set) {
   let cards = getCardsFromLocalStorage(set);
-  console.log(cards);
+  let cardId = card.cardId - 1;
+  let setId = set.setId;
+
+  cards[cardId] = card;
+  localStorage.setItem("SET: " + setId, JSON.stringify(cards));
 }
