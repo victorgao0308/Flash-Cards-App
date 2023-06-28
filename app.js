@@ -18,18 +18,19 @@ const cardsDiv = document.querySelector(".cardsDiv");
 const clearSetsBtn = document.querySelector(".clearSetsBtn");
 
 const editCardMenu = document.querySelector(".editCardMenu");
-const editFlipBtn = document.querySelector(".editFlipBtn");
 const editCardFront = document.querySelector(".editCardFront");
 const editCardBack = document.querySelector(".editCardBack");
 const editCardInfo = document.querySelector(".editCardInfo");
 const editCardDesc = document.querySelector(".editCardDesc");
-const editDoneBtn = document.querySelector(".editDoneBtn");
 
 const editCards = document.querySelector(".editCards");
+const editSide = document.querySelector(".editSide");
+const editBtnContainer = document.querySelector(".editBtnContainer");
 
 let setId = 1;
 let cardId = 1;
 let side = "(Front)";
+let editSideVar = "(Front)";
 
 let cards = [];
 
@@ -50,7 +51,6 @@ class Card {
   editCard(newFront, newBack) {
     this.front = newFront;
     this.back = newBack;
-
   }
 }
 
@@ -96,7 +96,6 @@ function addNewCard() {
   cards.push(card);
   cardId += 1;
 
-
   let newCard = document.createElement("div");
   newCard.classList.add("card");
   newCard.innerHTML = `<div class="displayCard" id = "cardFront ${card.cardId}">${cardValue}</div><div class="displayCardBack hideCardSide" id = "cardBack ${card.cardId}">${cardBackValue}</div><button class="editCardBtn hide" id = "cardEditBtn ${card.cardId}"><i class="fa-solid fa-pen-to-square"></i></button>`;
@@ -110,7 +109,7 @@ function addNewCard() {
   if (showEditBtn) {
     editBtn.classList.remove("hide");
   }
-  
+
   newCard.addEventListener("click", () => {
     cardFront.classList.toggle("hideCardSide");
     cardBack.classList.toggle("hideCardSide");
@@ -120,13 +119,30 @@ function addNewCard() {
   cardDesc.value = "";
   addCardToLocalStorage(card, setUserIsIn);
 
-
   editBtn.addEventListener("click", () => {
+    // default to editing the front of a card
+    if (editSideVar === "(Back)") {
+      editSideVar = "(Front)";
+      editCardFront.classList.toggle("hide");
+      editCardBack.classList.toggle("hide");
+    }
+    editSide.innerHTML = editSideVar;
+
     // prevent flipping the card when clicking the edit button
     cardFront.classList.toggle("hideCardSide");
     cardBack.classList.toggle("hideCardSide");
 
     editCardMenu.classList.toggle("hide");
+
+    let editBtnContainer = document.createElement("div");
+    editBtnContainer.classList.add("editBtnContainer");
+    editBtnContainer.innerHTML = `<button class="editFlipBtn" id = "editFlip ${card.cardId}">Flip Over</button>
+    <button class="editDoneBtn" id = "editDone ${card.cardId}">Done</button>`;
+
+    editCardMenu.appendChild(editBtnContainer);
+
+    let editFlipBtn = document.getElementById("editFlip " + card.cardId);
+    let editDoneBtn = document.getElementById("editDone " + card.cardId);
 
     editCardInfo.innerHTML = card.front;
     editCardDesc.innerHTML = card.back;
@@ -134,18 +150,25 @@ function addNewCard() {
     editFlipBtn.addEventListener("click", () => {
       editCardFront.classList.toggle("hide");
       editCardBack.classList.toggle("hide");
+
+      if (editSideVar === "(Front)") {
+        editSideVar = "(Back)";
+      } else {
+        editSideVar = "(Front)";
+      }
+
+      editSide.innerHTML = editSideVar;
+    });
+
+    // TODO: update value in local storage
+    editDoneBtn.addEventListener("click", () => {
+      let newFront = editCardInfo.value;
+      let newBack = editCardDesc.value;
+      card.editCard(newFront, newBack);
+      cardFront.innerHTML = newFront;
+      cardBack.innerHTML = newBack;
     });
   });
-
-  editDoneBtn.addEventListener("click", () => {
-    console.log(displayCard);
-    let newFront = editCardInfo.value;
-    let newBack = editCardDesc.value;
-    card.editCard(newFront, newBack);
-    displayCard.innerHTML = newFront;
-    displayCardBack.innerHTML = newBack;
-  })
-
 }
 
 addSetBtn.addEventListener("click", () => {
