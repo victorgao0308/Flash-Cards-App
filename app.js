@@ -33,6 +33,16 @@ const editFlipBtn = document.querySelector(".editFlipBtn");
 const editDoneBtn = document.querySelector(".editDoneBtn");
 const closeEditCardMenu = document.querySelector(".closeEditCardMenu");
 
+const setHeader = document.querySelector(".setHeader");
+
+
+const reviewCardsMenu = document.querySelector(".reviewCardsMenu");
+const reviewCardsBtn = document.querySelector(".reviewCardsBtn");
+const closeReviewMenuBtn = document.querySelector(".closeReviewMenuBtn");
+const reviewCardContainer = document.querySelector(".reviewCardContainer");
+const setBtnContainer = document.querySelector(".setBtnContainer");
+
+
 
 let setId = 1;
 let cardId = 1;
@@ -126,6 +136,7 @@ class Card {
     this.cardBack.innerHTML = this.newBack;
 
     editCardLocalStorage(this, setUserIsIn);
+    editCardMenu.classList.add("hide");
   }
 }
 
@@ -134,6 +145,8 @@ class Set {
     this.cards = [];
     this.setId = setId;
     this.name = name;
+    this.numCards = 0;
+
   }
 }
 
@@ -186,10 +199,15 @@ function addNewCard() {
   const cardBackValue = cardDesc.value;
   let card = new Card(cardId, cardValue, cardBackValue);
   setUserIsIn.cards.push(card);
+  setUserIsIn.numCards++;
   cardId += 1;
 
   // add card to local storage
   addCardToLocalStorage(card, setUserIsIn);
+
+  // update card count
+  setHeader.innerHTML = `<h2>${setUserIsIn.name}</h2>
+  <p>Number of Cards: ${setUserIsIn.numCards}</p>`;
 }
 
 // flip card while editing
@@ -234,7 +252,6 @@ createSetBtn.addEventListener("click", () => {
 // display the contents of the set that the user clicked on
 function displaySet(set) {
   const addSetBtn = document.querySelector(".addSetBtn");
-  const setHeader = document.querySelector(".setHeader");
   const currentSet = document.querySelector(".currentSet");
   const mySets = document.querySelector(".mySets");
   const currentSetNav = document.querySelector(".currentSetNav");
@@ -246,11 +263,13 @@ function displaySet(set) {
   clearSetsBtn.classList.add("hide");
 
   currentSet.innerHTML = set.name;
-  setHeader.innerHTML = `<h2>${set.name}</h2>
-  <p>${set.setId}</p>`;
+  
   setUserIsIn = set;
   getCardsFromLocalStorage(set);
   loadCards(set);
+
+  setHeader.innerHTML = `<h2>${set.name}</h2>
+  <p>Number of cards: ${set.numCards}</p>`;
 }
 
 // add set to local storage
@@ -320,6 +339,11 @@ function getCardsFromLocalStorage(set) {
 function loadCards(set) {
   cardId = 1;
   let cards = getCardsFromLocalStorage(set);
+  setUserIsIn.numCards = cards.length;
+  cards.forEach(card => {
+    let createCard = new Card(card.cardId, card.front, card.back);
+    cardId = card.cardId + 1;
+  });  
 }
 
 // toggle edit button on all cards
@@ -356,3 +380,60 @@ function editCardLocalStorage(card, set) {
   set.cards = cards;
   localStorage.setItem("SET: " + setId, JSON.stringify(set));
 }
+
+
+// enable review menu
+reviewCardsBtn.addEventListener('click', () => {
+  reviewCardsMenu.classList.remove('hide');
+
+  // hide everything else
+  setHeader.classList.add('hide');
+  setBtnContainer.classList.add('hide');
+  cardsContainer.classList.add('hide');
+
+  loadCardsForReview(setUserIsIn);
+})
+
+
+// close review menu
+closeReviewMenuBtn.addEventListener('click', () => {
+  reviewCardsMenu.classList.add('hide');
+
+  setHeader.classList.remove('hide');
+  setBtnContainer.classList.remove('hide');
+  cardsContainer.classList.remove('hide');
+})
+
+
+// load cards into the review menu
+function loadCardsForReview(set) {
+  // clear any existing elements
+  // reviewCardContainer.innerHTML = "";
+  let cards = set.cards;
+
+  // cards.forEach(card => {
+  //   let reviewCard = document.createElement('div');
+  //   reviewCard.innerHTML = card.front;
+  //   reviewCardContainer.appendChild(reviewCard);
+  // });
+ 
+}
+
+const reviewCard = document.querySelector(".reviewCard");
+const reviewCardInner = document.querySelector("reviewCardInner");
+
+// reviewCard.addEventListener('click', () => {
+//   reviewCard.classList.add("flipCard");
+//   reviewCardInner.classList.add("flipCard");
+// })
+
+
+const reviewCardFront = document.querySelector(".cardFront");
+const reviewCardBack = document.querySelector(".cardBack");
+
+function handleFlip() {
+  reviewCardFront.classList.toggle("flipped");
+  reviewCardBack.classList.toggle("flipped");
+}
+
+reviewCard.addEventListener('click', handleFlip);

@@ -51,14 +51,22 @@
 
     <!-- add cards -->
     <div class="cardsDiv hide">
-      <!-- add card button -->
-      <button class="addCard">
-        Add Card
-        <i class="fa fa-plus" aria-hidden="true"></i>
-      </button>
 
-      <!-- edit cards buton -->
-      <button class="editCards">Edit Cards</button>
+
+      <!-- buttons -->
+      <div class="setBtnContainer">
+        <!-- add card button -->
+        <button class="addCard">
+          Add Card
+          <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
+
+        <!-- edit cards button -->
+        <button class="editCards">Edit Cards</button>
+
+        <!-- review set button -->
+        <button class="reviewCardsBtn">Review</button>
+      </div>
 
       <!-- main container for cards -->
       <div class="cardsContainer"></div>
@@ -117,6 +125,24 @@
         <button class="editDoneBtn">Done</button>
       </div>
     </div>
+
+    <!-- review cards menu -->
+    <div class="reviewCardsMenu hide">
+      <h1>Review Cards</h1>
+      <button class="closeReviewMenuBtn">Close</button>
+
+      <div class="reviewCardContainer">
+
+        <div class="reviewCard">
+          <div class="cardBack">Back</div>
+          <div class="cardFront">Front</div>
+        </div>
+
+        
+      </div>
+
+    </div>
+
 
     <script type="module" src="app.js"></script>
   </body>
