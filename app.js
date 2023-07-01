@@ -35,14 +35,11 @@ const closeEditCardMenu = document.querySelector(".closeEditCardMenu");
 
 const setHeader = document.querySelector(".setHeader");
 
-
 const reviewCardsMenu = document.querySelector(".reviewCardsMenu");
 const reviewCardsBtn = document.querySelector(".reviewCardsBtn");
 const closeReviewMenuBtn = document.querySelector(".closeReviewMenuBtn");
 const reviewCardContainer = document.querySelector(".reviewCardContainer");
 const setBtnContainer = document.querySelector(".setBtnContainer");
-
-
 
 let setId = 1;
 let cardId = 1;
@@ -55,6 +52,9 @@ let showEditBtn = false;
 
 // keep track of which set the user is in
 let setUserIsIn;
+
+// keep track of the current cards to review
+let reviewCards = [];
 
 // classes
 class Card {
@@ -121,7 +121,6 @@ class Card {
         editCardMenu.classList.add("hide");
         editDoneBtn.removeEventListener("click", helper);
       });
-
     });
   }
 
@@ -146,7 +145,21 @@ class Set {
     this.setId = setId;
     this.name = name;
     this.numCards = 0;
+  }
+}
 
+// special class for review cards
+class reviewCard {
+  constructor(card, index) {
+    this.card = card;
+    this.index = index;
+    this.reviewCardElement = document.createElement("div");
+
+    this.reviewCardElement.classList.add("reviewCard");
+    this.reviewCardElement.innerHTML = `<div class="cardBack" id = "cardBack: ${this.card.cardId}">${this.card.back}</div><div class="cardFront" id = "cardFront: ${this.card.cardId}">${this.card.front}</div>`;
+    this.reviewCardElement.style.left = `${this.index * 100 + 5}%`;
+    reviewCards.push(this.reviewCardElement);
+    reviewCardContainer.appendChild(this.reviewCardElement);
   }
 }
 
@@ -263,7 +276,7 @@ function displaySet(set) {
   clearSetsBtn.classList.add("hide");
 
   currentSet.innerHTML = set.name;
-  
+
   setUserIsIn = set;
   getCardsFromLocalStorage(set);
   loadCards(set);
@@ -340,10 +353,10 @@ function loadCards(set) {
   cardId = 1;
   let cards = getCardsFromLocalStorage(set);
   setUserIsIn.numCards = cards.length;
-  cards.forEach(card => {
+  cards.forEach((card) => {
     let createCard = new Card(card.cardId, card.front, card.back);
     cardId = card.cardId + 1;
-  });  
+  });
 }
 
 // toggle edit button on all cards
@@ -381,59 +394,89 @@ function editCardLocalStorage(card, set) {
   localStorage.setItem("SET: " + setId, JSON.stringify(set));
 }
 
-
 // enable review menu
-reviewCardsBtn.addEventListener('click', () => {
-  reviewCardsMenu.classList.remove('hide');
+reviewCardsBtn.addEventListener("click", () => {
+  reviewCardsMenu.classList.remove("hide");
 
   // hide everything else
-  setHeader.classList.add('hide');
-  setBtnContainer.classList.add('hide');
-  cardsContainer.classList.add('hide');
+  setHeader.classList.add("hide");
+  setBtnContainer.classList.add("hide");
+  cardsContainer.classList.add("hide");
 
   loadCardsForReview(setUserIsIn);
-})
-
+});
 
 // close review menu
-closeReviewMenuBtn.addEventListener('click', () => {
-  reviewCardsMenu.classList.add('hide');
+closeReviewMenuBtn.addEventListener("click", () => {
+  reviewCardsMenu.classList.add("hide");
 
-  setHeader.classList.remove('hide');
-  setBtnContainer.classList.remove('hide');
-  cardsContainer.classList.remove('hide');
-})
+  setHeader.classList.remove("hide");
+  setBtnContainer.classList.remove("hide");
+  cardsContainer.classList.remove("hide");
+});
 
+let counter = 0;
+let currentReviewCard;
+let reviewCardFront;
+let reviewCardBack;
 
 // load cards into the review menu
 function loadCardsForReview(set) {
   // clear any existing elements
-  // reviewCardContainer.innerHTML = "";
+  reviewCardContainer.innerHTML = "";
   let cards = set.cards;
 
-  // cards.forEach(card => {
-  //   let reviewCard = document.createElement('div');
-  //   reviewCard.innerHTML = card.front;
-  //   reviewCardContainer.appendChild(reviewCard);
-  // });
- 
+  // reset counter and review cards array
+  counter = 0;
+  reviewCards = [];
+
+  cards.forEach((card, index) => {
+    let tempCard = new reviewCard(card, index);
+  });
+
+  currentReviewCard = document.querySelector(".reviewCard");
+  reviewCardFront = document.querySelector(".cardFront");
+  reviewCardBack = document.querySelector(".cardBack");
+
+  // flip the card
+  currentReviewCard.addEventListener("click", () => {
+    reviewCardFront.classList.toggle("flipped");
+    reviewCardBack.classList.toggle("flipped");
+  });
 }
 
-const reviewCard = document.querySelector(".reviewCard");
-const reviewCardInner = document.querySelector("reviewCardInner");
 
-// reviewCard.addEventListener('click', () => {
-//   reviewCard.classList.add("flipCard");
-//   reviewCardInner.classList.add("flipCard");
-// })
+// next review card
+const reviewNextBtn = document.querySelector(".reviewNextBtn");
+reviewNextBtn.addEventListener("click", () => {
+  counter++;
+  if (counter >= reviewCards.length) counter = 0;
+  slideReviewCards();
+});
 
+// prev review card
+const reviewPrevBtn = document.querySelector(".reviewPrevBtn");
+reviewPrevBtn.addEventListener("click", () => {
+  counter--;
+  if (counter < 0) counter = reviewCards.length - 1;
+  slideReviewCards();
+});
 
-const reviewCardFront = document.querySelector(".cardFront");
-const reviewCardBack = document.querySelector(".cardBack");
+function slideReviewCards() {
+  console.log()
+  reviewCards.forEach((card, index) => {
+    card.style.transform = `translateX(-${counter * currentReviewCard.getBoundingClientRect().width * 1/0.9}px)`;
 
-function handleFlip() {
-  reviewCardFront.classList.toggle("flipped");
-  reviewCardBack.classList.toggle("flipped");
+    if (counter * 100 == (parseInt(card.style.left) - 5)) {
+      currentReviewCard = card;
+      reviewCardFront = document.getElementById(`cardFront: ${index + 1}`);
+      reviewCardBack = document.getElementById(`cardBack: ${index + 1}`);
+    }
+  });
+
+  // flip the card
+  currentReviewCard.addEventListener("click", () => {
+    reviewCardFront.classList.toggle("flipped");
+    reviewCardBack.classList.toggle("flipped");
+  });
 }
-
-reviewCard.addEventListener('click', handleFlip);

@@ -284,30 +284,27 @@ li a:hover {
   right: 0px;
 }
 
-.reviewCard {
-  position: absolute;
-  height: 80%;
-  width: 80%;
-  left: 10%;
-  top: 10%;
-}
 
 .reviewCardContainer {
   position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  width: 100%;
-  height: 95%;
+  width: 70%;
+  height: 80%;
+  left: 15%;
+  top: 5%;
+  text-align: center;
   overflow: hidden;
 }
 
 .reviewCard {
   position: absolute;
-  height: 60%;
-  width: 60%;
-  left: 20%;
-  top: 12.5%;
+  height: 80%;
+  width: 90%;
+  left: 0;
+  top: 10%;
+  transition: transform 1s ease;
 }
 
 .cardFront, .cardBack {
@@ -336,4 +333,14 @@ li a:hover {
 
 .cardFront.flipped {
   transform: perspective(1000px) rotateY(-180deg);
+}
+
+.reviewBtnsContainer {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translate(-50%);
+}
+.reviewPrevBtn, .reviewNextBtn {
+  cursor: pointer;
 }
