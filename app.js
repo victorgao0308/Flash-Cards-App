@@ -41,6 +41,9 @@ const closeReviewMenuBtn = document.querySelector(".closeReviewMenuBtn");
 const reviewCardContainer = document.querySelector(".reviewCardContainer");
 const setBtnContainer = document.querySelector(".setBtnContainer");
 
+
+const studyCardsBtn = document.querySelector(".studyCardsBtn");
+
 let setId = 1;
 let cardId = 1;
 let side = "(Front)";
@@ -55,7 +58,6 @@ let setUserIsIn;
 
 // keep track of the current cards to review
 let reviewCards = [];
-
 
 let cardWidth = 0;
 
@@ -293,13 +295,6 @@ function addSetToLocalStorage(set) {
   localStorage.setItem("SET: " + set.setId, JSON.stringify(set));
 }
 
-// retrieve sets from local storage
-function getLocalStorage(item) {
-  return localStorage.getItem(item)
-    ? JSON.parse(localStorage.getItem(item))
-    : [];
-}
-
 window.addEventListener("load", loadSets);
 
 // load sets
@@ -311,7 +306,10 @@ function loadSets() {
     let key = "SET: " + i;
     let storageSet = localStorage.getItem(key)
       ? JSON.parse(localStorage.getItem(key))
-      : [];
+      : null;
+    if (!storageSet ) {
+      continue;
+    }
 
     let set = document.createElement("div");
     set.classList.add("set");
@@ -441,7 +439,8 @@ function loadCardsForReview(set) {
   reviewCardFront = document.querySelector(".cardFront");
   reviewCardBack = document.querySelector(".cardBack");
 
-  if (currentReviewCard) cardWidth = currentReviewCard.getBoundingClientRect().width;
+  if (currentReviewCard)
+    cardWidth = currentReviewCard.getBoundingClientRect().width;
 
   // flip the card
   currentReviewCard.addEventListener("click", flip);
@@ -463,16 +462,11 @@ reviewPrevBtn.addEventListener("click", () => {
   slideReviewCards();
 });
 
-
-
 function slideReviewCards() {
+  cardWidth = currentReviewCard.getBoundingClientRect().width;
   currentReviewCard.removeEventListener("click", flip);
-
-
   reviewCards.forEach((card) => {
-    card.style.transform = `translateX(-${
-      (counter * cardWidth) / 0.9
-    }px)`;
+    card.style.transform = `translateX(-${(counter * cardWidth) / 0.9}px)`;
   });
 
   currentReviewCard = reviewCards[counter];
@@ -487,3 +481,23 @@ function flip() {
   reviewCardFront.classList.toggle("flipped");
   reviewCardBack.classList.toggle("flipped");
 }
+
+
+// adjust review cards' scroll distance if window gets resized
+window.addEventListener("resize", () => {
+  if (cardWidth && reviewCards) {
+    cardWidth = currentReviewCard.getBoundingClientRect().width;
+    reviewCards.forEach((card) => {
+      card.style.transform = `translateX(-${(counter * cardWidth) / 0.9}px)`;
+    });
+  }
+});
+
+// study a set
+studyCardsBtn.addEventListener('click', () => {
+  var currentSetId = setUserIsIn.setId;
+  localStorage.setItem("Study Set ID", JSON.stringify(currentSetId));
+  location.href = "studySet.html";
+})
+
+
