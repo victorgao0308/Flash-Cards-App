@@ -56,6 +56,9 @@ let setUserIsIn;
 // keep track of the current cards to review
 let reviewCards = [];
 
+
+let cardWidth = 0;
+
 // classes
 class Card {
   constructor(cardId, front, back) {
@@ -438,13 +441,11 @@ function loadCardsForReview(set) {
   reviewCardFront = document.querySelector(".cardFront");
   reviewCardBack = document.querySelector(".cardBack");
 
-  // flip the card
-  currentReviewCard.addEventListener("click", () => {
-    reviewCardFront.classList.toggle("flipped");
-    reviewCardBack.classList.toggle("flipped");
-  });
-}
+  if (currentReviewCard) cardWidth = currentReviewCard.getBoundingClientRect().width;
 
+  // flip the card
+  currentReviewCard.addEventListener("click", flip);
+}
 
 // next review card
 const reviewNextBtn = document.querySelector(".reviewNextBtn");
@@ -462,21 +463,27 @@ reviewPrevBtn.addEventListener("click", () => {
   slideReviewCards();
 });
 
-function slideReviewCards() {
-  console.log()
-  reviewCards.forEach((card, index) => {
-    card.style.transform = `translateX(-${counter * currentReviewCard.getBoundingClientRect().width * 1/0.9}px)`;
 
-    if (counter * 100 == (parseInt(card.style.left) - 5)) {
-      currentReviewCard = card;
-      reviewCardFront = document.getElementById(`cardFront: ${index + 1}`);
-      reviewCardBack = document.getElementById(`cardBack: ${index + 1}`);
-    }
+
+function slideReviewCards() {
+  currentReviewCard.removeEventListener("click", flip);
+
+
+  reviewCards.forEach((card) => {
+    card.style.transform = `translateX(-${
+      (counter * cardWidth) / 0.9
+    }px)`;
   });
+
+  currentReviewCard = reviewCards[counter];
+  reviewCardFront = document.getElementById(`cardFront: ${counter + 1}`);
+  reviewCardBack = document.getElementById(`cardBack: ${counter + 1}`);
 
   // flip the card
-  currentReviewCard.addEventListener("click", () => {
-    reviewCardFront.classList.toggle("flipped");
-    reviewCardBack.classList.toggle("flipped");
-  });
+  currentReviewCard.addEventListener("click", flip);
+}
+
+function flip() {
+  reviewCardFront.classList.toggle("flipped");
+  reviewCardBack.classList.toggle("flipped");
 }
