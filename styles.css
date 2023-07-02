@@ -345,12 +345,3 @@ li a:hover {
 .reviewPrevBtn, .reviewNextBtn {
   cursor: pointer;
 }
-
-.studyContainer {
-  position: absolute;
-  width: 90%;
-  left: 5%;
-  height: 80%;
-  border: 3px solid black;
-  border-radius: 5px;
-}
