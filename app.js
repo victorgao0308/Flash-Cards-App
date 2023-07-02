@@ -162,7 +162,7 @@ class reviewCard {
 
     this.reviewCardElement.classList.add("reviewCard");
     this.reviewCardElement.innerHTML = `<div class="cardBack" id = "cardBack: ${this.card.cardId}">${this.card.back}</div><div class="cardFront" id = "cardFront: ${this.card.cardId}">${this.card.front}</div>`;
-    this.reviewCardElement.style.left = `${this.index * 100 + 5}%`;
+    this.reviewCardElement.style.left = `${this.index * 100 + 10}%`;
     reviewCards.push(this.reviewCardElement);
     reviewCardContainer.appendChild(this.reviewCardElement);
   }
@@ -466,7 +466,7 @@ function slideReviewCards() {
   cardWidth = currentReviewCard.getBoundingClientRect().width;
   currentReviewCard.removeEventListener("click", flip);
   reviewCards.forEach((card) => {
-    card.style.transform = `translateX(-${(counter * cardWidth) / 0.9}px)`;
+    card.style.transform = `translateX(-${(counter * cardWidth) / 0.8}px)`;
   });
 
   currentReviewCard = reviewCards[counter];
@@ -488,7 +488,7 @@ window.addEventListener("resize", () => {
   if (cardWidth && reviewCards) {
     cardWidth = currentReviewCard.getBoundingClientRect().width;
     reviewCards.forEach((card) => {
-      card.style.transform = `translateX(-${(counter * cardWidth) / 0.9}px)`;
+      card.style.transform = `translateX(-${(counter * cardWidth) / 0.8}px)`;
     });
   }
 });

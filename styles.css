@@ -290,9 +290,9 @@ li a:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  width: 70%;
+  width: 80%;
   height: 100%;
-  left: 15%;
+  left: 10%;
   top: 0%;
   text-align: center;
   overflow: hidden;
@@ -301,7 +301,7 @@ li a:hover {
 .reviewCard {
   position: absolute;
   height: 70%;
-  width: 90%;
+  width: 80%;
   left: 0;
   top: 15%;
   transition: transform 1s ease;
