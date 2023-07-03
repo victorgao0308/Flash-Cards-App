@@ -18,7 +18,6 @@ let studyCards = [];
 // store the card elements
 let studyElements = [];
 
-
 // card width
 let cardWidth;
 
@@ -46,6 +45,11 @@ function loadCards() {
   currentCards.forEach((card) => {
     cards.push(card);
   });
+  if (cards.length < 5) {
+    alert("You need at least 5 cards in a set to study it!");
+    location.href = "mySets.html";
+    return;
+  }
   createStudyArray(cards);
 }
 
@@ -58,12 +62,16 @@ function createStudyArray(cards) {
   cards.forEach((card, index) => {
     indices.set(card.cardId, index);
     studyCards.push(new studyCard(card));
-    Math.random() > 0.5
-      ? quizCards.push(new multipleChoiceCard(card))
-      : quizCards.push(new fillInTheBlankCard(card));
-    Math.random() > 0.5
-      ? quizCards.push(new multipleChoiceCard(card))
-      : quizCards.push(new fillInTheBlankCard(card));
+    // Math.random() > 0.5
+    //   ? quizCards.push(new multipleChoiceCard(card))
+    //   : quizCards.push(new fillInTheBlankCard(card));
+    // Math.random() > 0.5
+    //   ? quizCards.push(new multipleChoiceCard(card))
+    //   : quizCards.push(new fillInTheBlankCard(card));
+
+    // TODO: temporary; revert back to original when done
+    quizCards.push(new multipleChoiceCard(card));
+    quizCards.push(new multipleChoiceCard(card));
   });
 
   shuffleArray(quizCards);
@@ -81,7 +89,7 @@ function createStudyArray(cards) {
     }
   });
 
-  console.log(studyCards);
+  console.log(cards);
   // create the study elements
   let index = 0;
   studyCards.forEach((element) => {
@@ -117,11 +125,10 @@ class studyCard extends card {
   createElement(index) {
     let newElement = document.createElement("div");
     newElement.classList.add("studyCard");
-    newElement.innerHTML = `<div class="cardFront" id = "cardFront: ${index}">sample front</div><div class="cardBack" id = "cardBack: ${index}">sample back</div>`;
+    newElement.innerHTML = `<div class="cardFront" id = "cardFront: ${index}">${this.card.front}</div><div class="cardBack" id = "cardBack: ${index}">${this.card.back}</div>`;
     newElement.style.left = `${index * 100 + 10}%`;
     studyContainer.appendChild(newElement);
     studyElements.push(newElement);
-    
 
     // set up functionality for being able to flip study cards
     if (index == 0) {
@@ -141,13 +148,34 @@ class multipleChoiceCard extends card {
     let newElement = document.createElement("div");
     newElement.classList.add("multipleChoiceCard");
 
-    // TODO: populate the fields appropriately
-    newElement.innerHTML = `<h2>sample multiple choice question</h2><div class="optionsContainer"><input type="radio" id = "Option 1" name = "selection" value = "Option 1"><label for="Option 1"> Option 1</label><div></div><input type="radio" id = "Option 2" name = "selection" value = "Option 2"><label for="Option 2"> Option 2</label><div></div><input type="radio" id = "Option 3" name = "selection" value = "Option 3"><label for="Option 3"> Option 3</label><div></div><input type="radio" id = "Option 4" name = "selection" value = "Option 4"><label for="Option 4"> Option 4</label></div>`;
+    let options = getMultipleChoiceOptions(this);
+    newElement.innerHTML = `<h2>Multiple choice for: ${this.card.front}</h2><div class="optionsContainer"><input type="radio" id = "card: ${index} option: 1" name = "selection" value = "card: ${index} option: 1"><label for="card: ${index} option: 1">${options[0]}</label><div></div><input type="radio" id = "card: ${index} option: 2" name = "selection" value = ""card: ${index} option: 2""><label for="card: ${index} option: 2">${options[1]}</label><div></div><input type="radio" id = "card: ${index} option: 3" name = "selection" value = "card: ${index} option: 3"><label for="card: ${index} option: 3">${options[2]}</label><div></div><input type="radio" id = "card: ${index} option: 4" name = "selection" value = "card: ${index} option: 4"><label for="card: ${index} option: 4">${options[3]}</label></div><button class = "submitMCQBtn" id = "submit: ${index}">Submit</button>`;
+
     newElement.style.left = `${index * 100 + 10}%`;
     studyContainer.appendChild(newElement);
-    studyElements.push(newElement);
+
+    let submitBtn = document.getElementById(`submit: ${index.toString()}`);
+    console.log(submitBtn);
+
+    submitBtn.addEventListener('click', () => {
+        console.log('submit' + index)
+    })
     
+    studyElements.push(newElement);
   }
+}
+
+// pick random cards to act as the possible choices
+function getMultipleChoiceOptions(card) {
+  let options = [card.card.back];
+  while (options.length < 4) {
+    let randomInt = Math.floor(Math.random() * cards.length);
+    let newCard = cards[randomInt].back;
+    if (options.indexOf(newCard) == -1) {
+      options.push(newCard);
+    }
+  }
+  return shuffleArray(options);
 }
 
 class fillInTheBlankCard extends card {
@@ -180,9 +208,11 @@ function slideCards(counter) {
   if (studyCardElement.classList.contains("studyCard")) {
     cardFront = document.getElementById(`cardFront: ${counter}`);
     cardBack = document.getElementById(`cardBack: ${counter}`);
-
     // flip the card
     studyCardElement.addEventListener("click", flipCard);
+    cardType.innerHTML = "Learn";
+  } else if (studyCardElement.classList.contains("multipleChoiceCard")) {
+    cardType.innerHTML = "Quiz";
   }
 }
 
@@ -194,10 +224,10 @@ function flipCard() {
 
 // adjust review cards' scroll distance if window gets resized
 window.addEventListener("resize", () => {
-    if (cardWidth && reviewCards) {
-      cardWidth = currentReviewCard.getBoundingClientRect().width;
-      reviewCards.forEach((card) => {
-        card.style.transform = `translateX(-${(counter * cardWidth) / 0.8}px)`;
-      });
-    }
-  });
+  if (cardWidth && studyCardElement) {
+    cardWidth = studyCardElement.getBoundingClientRect().width;
+    studyElements.forEach((card) => {
+      card.style.transform = `translateX(-${(counter * cardWidth) / 0.8}px)`;
+    });
+  }
+});
