@@ -224,10 +224,10 @@ li a:hover {
 .displayCard, 
 .displayCardBack {
   user-select: none;
-  width: 10rem;
+  width: 9.8rem;
+  left: 0.1rem;
   height: 4.75rem;
   overflow: hidden;
-
 }
 
 .editCardBtn {

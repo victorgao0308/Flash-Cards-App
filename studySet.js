@@ -155,10 +155,20 @@ class multipleChoiceCard extends card {
     studyContainer.appendChild(newElement);
 
     let submitBtn = document.getElementById(`submit: ${index.toString()}`);
-    console.log(submitBtn);
 
     submitBtn.addEventListener('click', () => {
-        console.log('submit' + index)
+        let selections = document.getElementsByName("selection");
+        let flag = false;
+        selections.forEach(selection => {
+            if (selection.checked) {
+                flag = true;
+                let userChoice = selection.labels[0].innerHTML;
+                if (userChoice == this.card.back) console.log('correct');
+                else console.log('incorrect');
+            }
+        })
+        // change this??
+        if (!flag) alert('please select an option')
     })
     
     studyElements.push(newElement);
