@@ -43,6 +43,8 @@ const setBtnContainer = document.querySelector(".setBtnContainer");
 
 
 const studyCardsBtn = document.querySelector(".studyCardsBtn");
+const studyLink = document.querySelector(".studyLink");
+
 
 let setId = 1;
 let cardId = 1;
@@ -307,7 +309,7 @@ function loadSets() {
     let storageSet = localStorage.getItem(key)
       ? JSON.parse(localStorage.getItem(key))
       : null;
-    if (!storageSet ) {
+    if (!storageSet) {
       continue;
     }
 
@@ -498,6 +500,10 @@ studyCardsBtn.addEventListener('click', () => {
   var currentSetId = setUserIsIn.setId;
   localStorage.setItem("Study Set ID", JSON.stringify(currentSetId));
   location.href = "studySet.html";
+})
+
+window.addEventListener('load', () => {
+  localStorage.removeItem("Study Set ID");
 })
 
 

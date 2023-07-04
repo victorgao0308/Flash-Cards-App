@@ -1,7 +1,96 @@
+// TODO: be able to import a set of questions??
+
 const currentSetLabel = document.querySelector(".currentSetLabel");
 const studyContainer = document.querySelector(".studyContainer");
 const cardType = document.querySelector(".cardType");
 const nextCardBtn = document.querySelector(".nextCardBtn");
+const studyMenu = document.querySelector(".studyMenu");
+const setsContainer = document.querySelector(".setsContainer");
+const studyProgress = document.querySelector(".studyProgress");
+
+let setId;
+let numCards = 0;
+let current = 1;
+
+// classes
+class card {
+  constructor(card) {
+    this.card = card;
+  }
+}
+// classes
+class studyCard extends card {
+  constructor(card) {
+    super(card);
+  }
+
+  createElement(index) {
+    let newElement = document.createElement("div");
+    newElement.classList.add("studyCard");
+    newElement.innerHTML = `<div class="cardFront" id = "cardFront: ${index}">${this.card.front}</div><div class="cardBack" id = "cardBack: ${index}">${this.card.back}</div>`;
+    newElement.style.left = `${index * 100 + 10}%`;
+    studyContainer.appendChild(newElement);
+    studyElements.push(newElement);
+
+    // set up functionality for being able to flip study cards
+    if (index == 0) {
+      studyCardElement = document.querySelector(".studyCard");
+      cardFront = document.querySelector(".cardFront");
+      cardBack = document.querySelector(".cardBack");
+      studyCardElement.addEventListener("click", flipCard);
+    }
+  }
+}
+
+class multipleChoiceCard extends card {
+  constructor(card) {
+    super(card);
+  }
+  createElement(index) {
+    let newElement = document.createElement("div");
+    newElement.classList.add("multipleChoiceCard");
+
+    let options = getMultipleChoiceOptions(this);
+    newElement.innerHTML = `<h2>${this.card.front}</h2><div class="optionsContainer"><input type="radio" id = "card: ${index} option: 1" name = "selection ${index}" value = "card: ${index} option: 1"><label for="card: ${index} option: 1">${options[0]}</label><div></div><input type="radio" id = "card: ${index} option: 2" name = "selection ${index}" value = ""card: ${index} option: 2""><label for="card: ${index} option: 2">${options[1]}</label><div></div><input type="radio" id = "card: ${index} option: 3" name = "selection ${index}" value = "card: ${index} option: 3"><label for="card: ${index} option: 3">${options[2]}</label><div></div><input type="radio" id = "card: ${index} option: 4" name = "selection ${index}" value = "card: ${index} option: 4"><label for="card: ${index} option: 4">${options[3]}</label></div><button class = "submitMCQBtn" id = "submit: ${index}">Submit</button><h2 class = "MCQResult" id = "MCQ ${index}"></h2>`;
+
+    newElement.style.left = `${index * 100 + 10}%`;
+    studyContainer.appendChild(newElement);
+
+    let resultContainer = document.getElementById(`MCQ ${index}`)
+
+    let submitBtn = document.getElementById(`submit: ${index.toString()}`);
+
+    submitBtn.addEventListener("click", () => {
+      let selections = document.getElementsByName(`selection ${index}`);
+      let flag = false;
+      selections.forEach((selection) => {
+        if (selection.checked) {
+          flag = true;
+          let userChoice = selection.labels[0].innerHTML;
+          if (userChoice == this.card.back) {
+            resultContainer.innerHTML = "Correct!";
+            nextCardBtn.classList.remove('hide');
+          }
+          else {
+            resultContainer.innerHTML = "Try Again!";
+          };
+        }
+      });
+      // change this??
+      if (!flag) alert("please select an option");
+    });
+
+    studyElements.push(newElement);
+  }
+}
+
+
+
+class fillInTheBlankCard extends card {
+  constructor(card) {
+    super(card);
+  }
+}
 
 let studyCardElement;
 let cardFront;
@@ -21,6 +110,11 @@ let studyElements = [];
 // card width
 let cardWidth;
 
+window.addEventListener("load", () => {
+  getStudySetId();
+  loadCards();
+});
+
 // get set id to study
 function getStudySetId() {
   studySetId = localStorage.getItem("Study Set ID")
@@ -28,28 +122,22 @@ function getStudySetId() {
     : null;
 }
 
-window.addEventListener("load", () => {
-  getStudySetId();
-  loadCards();
-});
-
 // load cards into cards array
 function loadCards() {
   if (!studySetId) {
-    currentSetLabel.innerHTML = "Select a set to study...";
+    currentSetLabel.innerHTML = "Select a set to study...(You can only study a set if it has at least 5 cards)";
+    loadSets();
     return;
   }
+
+  studyMenu.classList.remove("hide");
   let currentSet = JSON.parse(localStorage.getItem("SET: " + studySetId));
   currentSetLabel.innerHTML = currentSet.name;
   let currentCards = currentSet.cards;
   currentCards.forEach((card) => {
     cards.push(card);
   });
-  if (cards.length < 5) {
-    alert("You need at least 5 cards in a set to study it!");
-    location.href = "mySets.html";
-    return;
-  }
+
   createStudyArray(cards);
 }
 
@@ -89,7 +177,6 @@ function createStudyArray(cards) {
     }
   });
 
-  console.log(cards);
   // create the study elements
   let index = 0;
   studyCards.forEach((element) => {
@@ -100,6 +187,8 @@ function createStudyArray(cards) {
     }
     index++;
   });
+  numCards = studyCards.length;
+  studyProgress.innerHTML = `${current}/${numCards}`
 }
 
 // randomize the elements of an array
@@ -109,70 +198,6 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
-}
-
-class card {
-  constructor(card) {
-    this.card = card;
-  }
-}
-// classes
-class studyCard extends card {
-  constructor(card) {
-    super(card);
-  }
-
-  createElement(index) {
-    let newElement = document.createElement("div");
-    newElement.classList.add("studyCard");
-    newElement.innerHTML = `<div class="cardFront" id = "cardFront: ${index}">${this.card.front}</div><div class="cardBack" id = "cardBack: ${index}">${this.card.back}</div>`;
-    newElement.style.left = `${index * 100 + 10}%`;
-    studyContainer.appendChild(newElement);
-    studyElements.push(newElement);
-
-    // set up functionality for being able to flip study cards
-    if (index == 0) {
-      studyCardElement = document.querySelector(".studyCard");
-      cardFront = document.querySelector(".cardFront");
-      cardBack = document.querySelector(".cardBack");
-      studyCardElement.addEventListener("click", flipCard);
-    }
-  }
-}
-
-class multipleChoiceCard extends card {
-  constructor(card) {
-    super(card);
-  }
-  createElement(index) {
-    let newElement = document.createElement("div");
-    newElement.classList.add("multipleChoiceCard");
-
-    let options = getMultipleChoiceOptions(this);
-    newElement.innerHTML = `<h2>Multiple choice for: ${this.card.front}</h2><div class="optionsContainer"><input type="radio" id = "card: ${index} option: 1" name = "selection" value = "card: ${index} option: 1"><label for="card: ${index} option: 1">${options[0]}</label><div></div><input type="radio" id = "card: ${index} option: 2" name = "selection" value = ""card: ${index} option: 2""><label for="card: ${index} option: 2">${options[1]}</label><div></div><input type="radio" id = "card: ${index} option: 3" name = "selection" value = "card: ${index} option: 3"><label for="card: ${index} option: 3">${options[2]}</label><div></div><input type="radio" id = "card: ${index} option: 4" name = "selection" value = "card: ${index} option: 4"><label for="card: ${index} option: 4">${options[3]}</label></div><button class = "submitMCQBtn" id = "submit: ${index}">Submit</button>`;
-
-    newElement.style.left = `${index * 100 + 10}%`;
-    studyContainer.appendChild(newElement);
-
-    let submitBtn = document.getElementById(`submit: ${index.toString()}`);
-
-    submitBtn.addEventListener('click', () => {
-        let selections = document.getElementsByName("selection");
-        let flag = false;
-        selections.forEach(selection => {
-            if (selection.checked) {
-                flag = true;
-                let userChoice = selection.labels[0].innerHTML;
-                if (userChoice == this.card.back) console.log('correct');
-                else console.log('incorrect');
-            }
-        })
-        // change this??
-        if (!flag) alert('please select an option')
-    })
-    
-    studyElements.push(newElement);
-  }
 }
 
 // pick random cards to act as the possible choices
@@ -188,19 +213,16 @@ function getMultipleChoiceOptions(card) {
   return shuffleArray(options);
 }
 
-class fillInTheBlankCard extends card {
-  constructor(card) {
-    super(card);
-  }
-}
-
 let counter = 0;
+
 // move to next card while studying
 nextCardBtn.addEventListener("click", () => {
   counter++;
   if (counter >= studyElements.length) {
     counter = 0;
   }
+  current++;
+  studyProgress.innerHTML = `${current}/${numCards}`
   slideCards(counter);
 });
 
@@ -216,12 +238,14 @@ function slideCards(counter) {
 
   // only add handling for flipping if card is a study card
   if (studyCardElement.classList.contains("studyCard")) {
+    nextCardBtn.classList.remove('hide');
     cardFront = document.getElementById(`cardFront: ${counter}`);
     cardBack = document.getElementById(`cardBack: ${counter}`);
     // flip the card
     studyCardElement.addEventListener("click", flipCard);
     cardType.innerHTML = "Learn";
   } else if (studyCardElement.classList.contains("multipleChoiceCard")) {
+    nextCardBtn.classList.add('hide');
     cardType.innerHTML = "Quiz";
   }
 }
@@ -241,3 +265,36 @@ window.addEventListener("resize", () => {
     });
   }
 });
+
+// get sets
+function loadSets() {
+  setId = 1;
+  let keys = Object.keys(localStorage);
+
+  for (let i = 1; i <= keys.length; i++) {
+    let key = "SET: " + i;
+    let storageSet = localStorage.getItem(key)
+      ? JSON.parse(localStorage.getItem(key))
+      : null;
+    if (!storageSet) {
+      continue;
+    }
+
+    if (storageSet.cards.length >= 5) {
+      let set = document.createElement("div");
+      set.classList.add("set");
+
+      set.innerHTML = `<h2>${storageSet.name}</h2>`;
+      setsContainer.appendChild(set);
+
+      set.addEventListener("click", () => {
+        localStorage.setItem("Study Set ID", JSON.stringify(storageSet.setId));
+        setsContainer.classList.add("hide");
+        getStudySetId();
+        loadCards();
+      });
+
+      setId = storageSet.setId + 1;
+    }
+  }
+}
