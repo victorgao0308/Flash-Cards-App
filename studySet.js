@@ -83,12 +83,16 @@ class multipleChoiceCard extends card {
     submitBtn.addEventListener("click", () => {
       let selections = document.getElementsByName(`selection ${index}`);
       let flag = false;
+
+
       selections.forEach((selection) => {
         if (selection.checked) {
           flag = true;
           let userChoice = selection.labels[0].innerHTML;
           if (userChoice == this.card.back) {
             resultContainer.innerHTML = "Correct!";
+            this.card.MCQCorrect++;
+
             selections.forEach((s) => {
               s.disabled = true;
             });
@@ -110,6 +114,12 @@ class multipleChoiceCard extends card {
         setTimeout(() => {
           resultContainer.innerHTML = "";
         }, 1000);
+      }
+
+      else {
+        this.card.MCQAttempted++;
+        this.card.MCQPercentage = Math.round(((this.card.MCQCorrect/this.card.MCQAttempted) * 100) * 100) / 100 + "%";
+        console.log(this.card.MCQPercentage);
       }
     });
 
@@ -254,6 +264,9 @@ function slideCards(counter) {
       endCard.classList.remove("hide");
       endStudyBtn.classList.remove("hide");
       nextCardBtn.classList.add("hide");
+      cards.forEach(c => {
+        console.log(c.front, c.MCQPercentage);
+      })
     }, 1000);
     return;
   }

@@ -156,9 +156,9 @@
   }
 
   .MCQResult {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%);
+    position: absolute;   
+    width: 100%;
+    text-align: center; 
     top: 75%;
   }
 
