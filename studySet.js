@@ -32,6 +32,16 @@ let studyElements = [];
 // card width
 let cardWidth;
 
+// keep track of the study session time
+let studyStartTime;
+let studyEndTime;
+let studySessionTime;
+
+// overall study session percentage
+let studySessionCorrect = 0;
+let studySessionAttempted = 0;
+let studySessionPercentage = 0;
+
 // classes
 class card {
   constructor(card) {
@@ -84,7 +94,6 @@ class multipleChoiceCard extends card {
       let selections = document.getElementsByName(`selection ${index}`);
       let flag = false;
 
-
       selections.forEach((selection) => {
         if (selection.checked) {
           flag = true;
@@ -92,6 +101,7 @@ class multipleChoiceCard extends card {
           if (userChoice == this.card.back) {
             resultContainer.innerHTML = "Correct!";
             this.card.MCQCorrect++;
+            studySessionCorrect++;
 
             selections.forEach((s) => {
               s.disabled = true;
@@ -114,12 +124,13 @@ class multipleChoiceCard extends card {
         setTimeout(() => {
           resultContainer.innerHTML = "";
         }, 1000);
-      }
-
-      else {
+      } else {
         this.card.MCQAttempted++;
-        this.card.MCQPercentage = Math.round(((this.card.MCQCorrect/this.card.MCQAttempted) * 100) * 100) / 100 + "%";
-        console.log(this.card.MCQPercentage);
+        studySessionAttempted++;
+        this.card.MCQPercentage =
+          Math.round(
+            (this.card.MCQCorrect / this.card.MCQAttempted) * 100 * 100
+          ) / 100;
       }
     });
 
@@ -163,6 +174,7 @@ function loadCards() {
   });
 
   createStudyArray(cards);
+  startStudySession();
 }
 
 // create the order of cards in the studyCards array
@@ -259,14 +271,12 @@ function slideCards(counter) {
 
   // end of study session
   if (counter >= studyElements.length) {
+    endStudySession();
     setTimeout(() => {
       cardType.innerHTML = "Study Session Complete";
       endCard.classList.remove("hide");
       endStudyBtn.classList.remove("hide");
       nextCardBtn.classList.add("hide");
-      cards.forEach(c => {
-        console.log(c.front, c.MCQPercentage);
-      })
     }, 1000);
     return;
   }
@@ -337,7 +347,8 @@ function loadSets() {
 }
 
 endStudyBtn.addEventListener("click", () => {
-  console.log("doneeee");
+  localStorage.removeItem("Study Set ID");
+  location.href = "studySet.html";
 });
 
 // skip to end of study session
@@ -347,3 +358,41 @@ window.addEventListener("keydown", (e) => {
     slideCards(counter);
   }
 });
+
+function startStudySession() {
+  studyStartTime = Date.now() / 1000;
+}
+
+function endStudySession() {
+  studyEndTime = Date.now() / 1000;
+  studySessionTime = studyEndTime - studyStartTime;
+  let time;
+
+  if (studySessionTime < 60) {
+    time = Math.round(studySessionTime * 100) / 100 + "s";
+  } else if (studySessionTime < 3600) {
+    let minutes = Math.floor(studySessionTime / 60);
+    let seconds = studySessionTime % 60;
+    time = `${minutes}m ${Math.round(seconds * 100) / 100}s`;
+  } else {
+    let hours = Math.floor(studySessionTime / 3600);
+    let minutes = Math.floor(studySessionTime / 60) - hours * 60;
+    let seconds = studySessionTime % 60;
+    time = `${hours}h ${minutes}m ${Math.round(seconds * 100) / 100}s`;
+  }
+
+  studySessionPercentage =
+    (Math.round((studySessionCorrect / studySessionAttempted) * 100) / 100) *
+    100;
+
+  const sessionTime = document.querySelector(".sessionTime");
+  const overallPercentage = document.querySelector(".overallPercentage");
+  sessionTime.innerHTML = `Session Time: ${time}`;
+
+  if (isNaN(studySessionPercentage))
+    overallPercentage.innerHTML = `Session Accuracy: N/A`;
+  else
+    overallPercentage.innerHTML = `Session Accuracy: ${studySessionPercentage}%`;
+
+  
+}
