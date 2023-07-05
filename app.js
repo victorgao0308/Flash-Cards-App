@@ -156,6 +156,7 @@ class Set {
     this.setId = setId;
     this.name = name;
     this.numCards = 0;
+    this.timeStudied = 0;
   }
 }
 

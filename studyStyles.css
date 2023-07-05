@@ -92,7 +92,7 @@
 
   .nextCardBtn, .endStudy {
     position: absolute;
-    bottom: 2rem;
+    bottom: 1rem;
     left: 50%;
     transform: translate(-50%);
   }
@@ -109,6 +109,43 @@
     transition: transform 1s ease;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+  }
+
+
+  .fillInTheBlankCard {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 0.25rem;
+    height: 70%;
+    border: 3px solid black;
+    width: 80%;
+    left: 10%;
+    top: 15%;
+    transition: transform 1s ease;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .fillInTheBlankCard h2 {
+    text-align: center;
+  }
+
+  .fillInTheBlankInput {
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 50%;
+    padding: 2px;
+    resize: none;
+  }
+
+  .fillInTheBlankSubmitBtn {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translate(-50%);
   }
 
   .optionsContainer {
@@ -156,10 +193,10 @@
   }
 
   .MCQResult {
-    position: absolute;   
+    position: relative;   
     width: 100%;
     text-align: center; 
-    top: 75%;
+    top: 50%;
   }
 
 

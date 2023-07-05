@@ -118,7 +118,7 @@ class multipleChoiceCard extends card {
           }
         }
       });
-      // change this??
+
       if (!flag) {
         resultContainer.innerHTML = "Please Select an Option!";
         setTimeout(() => {
@@ -141,6 +141,26 @@ class multipleChoiceCard extends card {
 class fillInTheBlankCard extends card {
   constructor(card) {
     super(card);
+  }
+
+  createElement(index) {
+    let newElement = document.createElement("div");
+    newElement.classList.add("fillInTheBlankCard");
+    newElement.innerHTML=`<h2>Question goes here</h2><button class="fillInTheBlankSubmitBtn" id = "fillInTheBlankBtn: ${index}">Submit</button><textarea class = "fillInTheBlankInput" placeholder="Enter answer here" id = "textarea: ${index}">`;
+
+    newElement.style.left = `${index * 100 + 10}%`;
+    studyContainer.appendChild(newElement);
+
+
+    let submitBtn = document.getElementById(`fillInTheBlankBtn: ${index}`);
+    let textArea = document.getElementById(`textarea: ${index}`);
+
+    submitBtn.addEventListener('click', () => {
+      console.log(textArea.value);
+    })
+
+    studyElements.push(newElement);
+
   }
 }
 
@@ -173,6 +193,7 @@ function loadCards() {
     cards.push(card);
   });
 
+
   createStudyArray(cards);
   startStudySession();
 }
@@ -186,16 +207,14 @@ function createStudyArray(cards) {
   cards.forEach((card, index) => {
     indices.set(card.cardId, index);
     studyCards.push(new studyCard(card));
-    // Math.random() > 0.5
-    //   ? quizCards.push(new multipleChoiceCard(card))
-    //   : quizCards.push(new fillInTheBlankCard(card));
-    // Math.random() > 0.5
-    //   ? quizCards.push(new multipleChoiceCard(card))
-    //   : quizCards.push(new fillInTheBlankCard(card));
 
-    // TODO: temporary; revert back to original when done
-    quizCards.push(new multipleChoiceCard(card));
-    quizCards.push(new multipleChoiceCard(card));
+    // TODO: change the formula for this
+    Math.random() > 0.5
+      ? quizCards.push(new multipleChoiceCard(card))
+      : quizCards.push(new fillInTheBlankCard(card));
+    Math.random() > 0.5
+      ? quizCards.push(new multipleChoiceCard(card))
+      : quizCards.push(new fillInTheBlankCard(card));
   });
 
   shuffleArray(quizCards);
@@ -219,6 +238,9 @@ function createStudyArray(cards) {
     if (element instanceof studyCard) {
       element.createElement(index);
     } else if (element instanceof multipleChoiceCard) {
+      element.createElement(index);
+    }
+    else {
       element.createElement(index);
     }
     index++;
@@ -394,5 +416,12 @@ function endStudySession() {
   else
     overallPercentage.innerHTML = `Session Accuracy: ${studySessionPercentage}%`;
 
-  
+
+
+  // update the card statistics
+  let oldSet = JSON.parse(localStorage.getItem(`SET: ${studySetId}`));
+  oldSet.cards = cards;
+  oldSet.timeStudied +=  Math.round(studySessionTime * 100) / 100;
+  oldSet.timeStudied = Math.round(oldSet.timeStudied * 100) / 100;
+  localStorage.setItem(`SET: ${studySetId}`, JSON.stringify(oldSet));
 }
