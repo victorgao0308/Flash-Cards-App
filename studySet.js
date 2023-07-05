@@ -7,10 +7,30 @@ const nextCardBtn = document.querySelector(".nextCardBtn");
 const studyMenu = document.querySelector(".studyMenu");
 const setsContainer = document.querySelector(".setsContainer");
 const studyProgress = document.querySelector(".studyProgress");
+const endCard = document.querySelector(".endCard");
+const endStudyBtn = document.querySelector(".endStudy");
 
 let setId;
 let numCards = 0;
 let current = 1;
+
+let studyCardElement;
+let cardFront;
+let cardBack;
+
+let studySetId;
+
+// store the cards
+let cards = [];
+
+// store the study cards
+let studyCards = [];
+
+// store the card elements
+let studyElements = [];
+
+// card width
+let cardWidth;
 
 // classes
 class card {
@@ -56,7 +76,7 @@ class multipleChoiceCard extends card {
     newElement.style.left = `${index * 100 + 10}%`;
     studyContainer.appendChild(newElement);
 
-    let resultContainer = document.getElementById(`MCQ ${index}`)
+    let resultContainer = document.getElementById(`MCQ ${index}`);
 
     let submitBtn = document.getElementById(`submit: ${index.toString()}`);
 
@@ -69,46 +89,39 @@ class multipleChoiceCard extends card {
           let userChoice = selection.labels[0].innerHTML;
           if (userChoice == this.card.back) {
             resultContainer.innerHTML = "Correct!";
-            nextCardBtn.classList.remove('hide');
-          }
-          else {
+            selections.forEach((s) => {
+              s.disabled = true;
+            });
+            submitBtn.classList.add("hide");
+            nextCardBtn.classList.remove("hide");
+          } else {
             resultContainer.innerHTML = "Try Again!";
-          };
+            setTimeout(() => {
+              resultContainer.innerHTML = "";
+            }, 1000);
+            selection.disabled = true;
+            selection.checked = false;
+          }
         }
       });
       // change this??
-      if (!flag) alert("please select an option");
+      if (!flag) {
+        resultContainer.innerHTML = "Please Select an Option!";
+        setTimeout(() => {
+          resultContainer.innerHTML = "";
+        }, 1000);
+      }
     });
 
     studyElements.push(newElement);
   }
 }
 
-
-
 class fillInTheBlankCard extends card {
   constructor(card) {
     super(card);
   }
 }
-
-let studyCardElement;
-let cardFront;
-let cardBack;
-
-let studySetId;
-
-// store the cards
-let cards = [];
-
-// store the study cards
-let studyCards = [];
-
-// store the card elements
-let studyElements = [];
-
-// card width
-let cardWidth;
 
 window.addEventListener("load", () => {
   getStudySetId();
@@ -125,7 +138,8 @@ function getStudySetId() {
 // load cards into cards array
 function loadCards() {
   if (!studySetId) {
-    currentSetLabel.innerHTML = "Select a set to study...(You can only study a set if it has at least 5 cards)";
+    currentSetLabel.innerHTML =
+      "Select a set to study...(You can only study a set if it has at least 5 cards)";
     loadSets();
     return;
   }
@@ -188,7 +202,7 @@ function createStudyArray(cards) {
     index++;
   });
   numCards = studyCards.length;
-  studyProgress.innerHTML = `${current}/${numCards}`
+  studyProgress.innerHTML = `${current}/${numCards}`;
 }
 
 // randomize the elements of an array
@@ -218,11 +232,10 @@ let counter = 0;
 // move to next card while studying
 nextCardBtn.addEventListener("click", () => {
   counter++;
-  if (counter >= studyElements.length) {
-    counter = 0;
-  }
   current++;
-  studyProgress.innerHTML = `${current}/${numCards}`
+  if (counter >= studyElements.length) studyProgress.innerHTML = `Done`;
+  else studyProgress.innerHTML = `${current}/${numCards}`;
+
   slideCards(counter);
 });
 
@@ -234,18 +247,29 @@ function slideCards(counter) {
     card.style.transform = `translateX(-${(counter * cardWidth) / 0.8}px)`;
   });
 
+  // end of study session
+  if (counter >= studyElements.length) {
+    setTimeout(() => {
+      cardType.innerHTML = "Study Session Complete";
+      endCard.classList.remove("hide");
+      endStudyBtn.classList.remove("hide");
+      nextCardBtn.classList.add("hide");
+    }, 1000);
+    return;
+  }
+
   studyCardElement = studyElements[counter];
 
   // only add handling for flipping if card is a study card
   if (studyCardElement.classList.contains("studyCard")) {
-    nextCardBtn.classList.remove('hide');
+    nextCardBtn.classList.remove("hide");
     cardFront = document.getElementById(`cardFront: ${counter}`);
     cardBack = document.getElementById(`cardBack: ${counter}`);
     // flip the card
     studyCardElement.addEventListener("click", flipCard);
     cardType.innerHTML = "Learn";
   } else if (studyCardElement.classList.contains("multipleChoiceCard")) {
-    nextCardBtn.classList.add('hide');
+    nextCardBtn.classList.add("hide");
     cardType.innerHTML = "Quiz";
   }
 }
@@ -298,3 +322,15 @@ function loadSets() {
     }
   }
 }
+
+endStudyBtn.addEventListener("click", () => {
+  console.log("doneeee");
+});
+
+// skip to end of study session
+window.addEventListener("keydown", (e) => {
+  if (e.key === "s") {
+    counter = studyElements.length;
+    slideCards(counter);
+  }
+});

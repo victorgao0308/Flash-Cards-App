@@ -90,7 +90,7 @@
     transform: perspective(1000px) rotateY(-180deg);
   }
 
-  .nextCardBtn {
+  .nextCardBtn, .endStudy {
     position: absolute;
     bottom: 2rem;
     left: 50%;
@@ -112,10 +112,10 @@
   }
 
   .optionsContainer {
-    position: absolute;
-    width: 50%;
+    position: relative;
+    width: 75%;
     top: 20%;
-    left: 25%;
+    left: 12.5%;
     text-align: left;
 
   }
@@ -159,8 +159,32 @@
     position: absolute;
     left: 50%;
     transform: translate(-50%);
-    top: 50%;
+    top: 75%;
   }
+
+
+
+  .endCard {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 0.25rem;
+    height: 70%;
+    width: 80%;
+    left: 10%;
+    top: 15%;
+    transition: transform 1s ease;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    text-align: center;
+  }
+
+  .endCard h2 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
 
   .hide {
     display: none;
