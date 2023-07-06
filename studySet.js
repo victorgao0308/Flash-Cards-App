@@ -42,6 +42,10 @@ let studySessionCorrect = 0;
 let studySessionAttempted = 0;
 let studySessionPercentage = 0;
 
+
+// keep track of cards missed in the study session
+let sessionMissed = new Map();
+
 // classes
 class card {
   constructor(card) {
@@ -101,6 +105,7 @@ class multipleChoiceCard extends card {
           if (userChoice == this.card.back) {
             resultContainer.innerHTML = "Correct!";
             this.card.MCQCorrect++;
+            this.card.totalCorrect++;
             studySessionCorrect++;
 
             selections.forEach((s) => {
@@ -110,6 +115,7 @@ class multipleChoiceCard extends card {
             nextCardBtn.classList.remove("hide");
           } else {
             resultContainer.innerHTML = "Try Again!";
+            incrementMapValue(sessionMissed, this.card)
             setTimeout(() => {
               resultContainer.innerHTML = "";
             }, 1000);
@@ -126,10 +132,15 @@ class multipleChoiceCard extends card {
         }, 1000);
       } else {
         this.card.MCQAttempted++;
+        this.card.totalAttempted++;
         studySessionAttempted++;
         this.card.MCQPercentage =
           Math.round(
             (this.card.MCQCorrect / this.card.MCQAttempted) * 100 * 100
+          ) / 100;
+        this.card.totalPercentage =
+          Math.round(
+            (this.card.totalCorrect / this.card.totalAttempted) * 100 * 100
           ) / 100;
       }
     });
@@ -146,23 +157,52 @@ class fillInTheBlankCard extends card {
   createElement(index) {
     let newElement = document.createElement("div");
     newElement.classList.add("fillInTheBlankCard");
-    newElement.innerHTML=`<h2>Question goes here</h2><button class="fillInTheBlankSubmitBtn" id = "fillInTheBlankBtn: ${index}">Submit</button><textarea class = "fillInTheBlankInput" placeholder="Enter answer here" id = "textarea: ${index}">`;
+    newElement.innerHTML = `<h2>${this.card.front}</h2><h2 class = "FITBResult" id = "FITB: ${index}"></h2><button class="fillInTheBlankSubmitBtn" id = "fillInTheBlankBtn: ${index}">Submit</button><textarea class = "fillInTheBlankInput" placeholder="Enter answer here" id = "textarea: ${index}">`;
 
     newElement.style.left = `${index * 100 + 10}%`;
     studyContainer.appendChild(newElement);
 
-
     let submitBtn = document.getElementById(`fillInTheBlankBtn: ${index}`);
     let textArea = document.getElementById(`textarea: ${index}`);
+    let result = document.getElementById(`FITB: ${index}`);
 
-    submitBtn.addEventListener('click', () => {
-      console.log(textArea.value);
-    })
+    submitBtn.addEventListener("click", () => {
+      let input = textArea.value;
+      if (input === this.card.back) {
+        result.innerHTML = "Correct!";
+        submitBtn.classList.add("hide");
+        nextCardBtn.classList.remove("hide");
+        textArea.disabled = true;
+        this.card.FITBCorrect++;
+        this.card.totalCorrect++;
+        studySessionCorrect++;
+      } else {
+        result.innerHTML = "Try Again!";
+        incrementMapValue(sessionMissed, this.card)
+        setTimeout(() => {
+          result.innerHTML = "";
+        }, 1000);
+      }
+
+      this.card.FITBAttempted++;
+      this.card.totalAttempted++;
+      studySessionAttempted++;
+      this.card.FITBPercentage =
+        Math.round(
+          (this.card.FITBCorrect / this.card.FITBAttempted) * 100 * 100
+        ) / 100;
+      this.card.totalPercentage =
+        Math.round(
+          (this.card.totalCorrect / this.card.totalAttempted) * 100 * 100
+        ) / 100;
+    });
 
     studyElements.push(newElement);
-
   }
 }
+
+// returns if the user input is valid or not
+function checkInput(input, expected) {}
 
 window.addEventListener("load", () => {
   getStudySetId();
@@ -192,7 +232,6 @@ function loadCards() {
   currentCards.forEach((card) => {
     cards.push(card);
   });
-
 
   createStudyArray(cards);
   startStudySession();
@@ -239,8 +278,7 @@ function createStudyArray(cards) {
       element.createElement(index);
     } else if (element instanceof multipleChoiceCard) {
       element.createElement(index);
-    }
-    else {
+    } else {
       element.createElement(index);
     }
     index++;
@@ -313,7 +351,7 @@ function slideCards(counter) {
     // flip the card
     studyCardElement.addEventListener("click", flipCard);
     cardType.innerHTML = "Learn";
-  } else if (studyCardElement.classList.contains("multipleChoiceCard")) {
+  } else {
     nextCardBtn.classList.add("hide");
     cardType.innerHTML = "Quiz";
   }
@@ -416,12 +454,28 @@ function endStudySession() {
   else
     overallPercentage.innerHTML = `Session Accuracy: ${studySessionPercentage}%`;
 
-
-
   // update the card statistics
   let oldSet = JSON.parse(localStorage.getItem(`SET: ${studySetId}`));
   oldSet.cards = cards;
-  oldSet.timeStudied +=  Math.round(studySessionTime * 100) / 100;
+  oldSet.timeStudied += Math.round(studySessionTime * 100) / 100;
   oldSet.timeStudied = Math.round(oldSet.timeStudied * 100) / 100;
   localStorage.setItem(`SET: ${studySetId}`, JSON.stringify(oldSet));
+
+
+  const missedCardsList = document.querySelector(".missedCardsList");
+
+  for (let[key, value] of sessionMissed) {
+    let newListItem = document.createElement("div");
+    newListItem.classList.add("missedCardElement");
+    newListItem.innerHTML = `${key.front}`;
+    missedCardsList.appendChild(newListItem)
+  }
+}
+
+// increment the value of a key from a map
+// if the key does not exist, set the value to 1
+
+function incrementMapValue(map, key) {
+  let val = map.get(key) || 0;
+  map.set(key, val + 1);
 }

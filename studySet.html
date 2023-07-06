@@ -6,43 +6,44 @@
     <title>Flash Cards App</title>
     <script
       src="https://kit.fontawesome.com/284cdbd282.js"
-      crossorigin="anonymous">
-    </script>
+      crossorigin="anonymous"
+    ></script>
     <link rel="stylesheet" href="studyStyles.css" />
   </head>
   <body>
     <!-- top nav bar -->
-    <ul>
+    <ul class="navBar">
       <li><a href="index.html">Home</a></li>
       <li><a href="mySets.html">My Sets</a></li>
-      <li><a  class = "activeLink" href="studySet.html">Study</a></li>
+      <li><a class="activeLink" href="studySet.html">Study</a></li>
     </ul>
 
     <h2>Study a set</h2>
 
-    <h3 class = "currentSetLabel"></h3>
-    
+    <h3 class="currentSetLabel"></h3>
+
     <div class="setsContainer"></div>
 
-    
     <div class="studyMenu hide">
-      <h2 class = "cardType">Learn</h2>
+      <h2 class="cardType">Learn</h2>
       <h3>Progress: <span class="studyProgress"></span></h3>
       <div class="studyContainer">
         <div class="endCard hide">
           <h2>Study Session Complete!</h2>
           <div class="statsContainer">
-            <h3 class = "sessionTime"></h3>
+            <h3 class="sessionTime"></h3>
             <h3 class="overallPercentage"></h3>
+
+            <h3 class="missedCards">Missed:</h3>
+            <div class="missedCardsList">
+            </div>
           </div>
         </div>
-
-
       </div>
       <button class="nextCardBtn">Next</button>
-      <button class = "endStudy hide">Done</button>
+      <button class="endStudy hide">Done</button>
     </div>
 
-    <script src = "studySet.js"></script>
+    <script src="studySet.js"></script>
   </body>
 </html>

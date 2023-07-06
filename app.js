@@ -75,6 +75,14 @@ class Card {
     this.MCQCorrect = 0;
     this.MCQPercentage = 0;
 
+    this.FITBAttempted = 0;
+    this.FITBCorrect = 0;
+    this.FITBPercentage = 0;
+
+    this.totalAttempted = 0;
+    this.totalCorrect = 0;
+    this.totalPercentage = 0;
+
     // create the card div and add it to the cards container
     this.cardElement = document.createElement("div");
     this.cardElement.classList.add("card");

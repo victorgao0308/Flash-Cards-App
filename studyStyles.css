@@ -4,7 +4,7 @@
     box-sizing: border-box;
   }
 
-  ul {
+  .navBar {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -12,11 +12,11 @@
     background-color: #333;
   }
   
-  li {
+  .navBar li {
     float: left;
   }
   
-  li a {
+  .navBar li a {
     display: block;
     color: white;
     text-align: center;
@@ -24,15 +24,13 @@
     text-decoration: none;
   }
   
-  li a:hover {
+  .navBar li a:hover {
     background-color: #111;
   }
   
   .activeLink {
       background-color: #111;
   }
-
-
 
   .studyMenu {
     position: absolute;
@@ -130,10 +128,15 @@
     text-align: center;
   }
 
-  .fillInTheBlankInput {
+  .FITBResult {
     position: relative;
+    top: 5%;
+  }
+
+  .fillInTheBlankInput {
+    position: absolute;
     left: 50%;
-    top: 50%;
+    top: 55%;
     transform: translate(-50%, -50%);
     width: 70%;
     height: 50%;
@@ -202,7 +205,7 @@
 
 
   .endCard {
-    position: absolute;
+    position: relative;
     box-sizing: border-box;
     border-radius: 0.25rem;
     height: 70%;
@@ -213,12 +216,7 @@
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     text-align: center;
-  }
-
-  .endCard h2 {
-    position: relative;
-    width: 100%;
-    text-align: center;
+    overflow: hidden;
   }
 
   .sessionTime {
@@ -234,6 +232,32 @@
     left: 50%;
     transform: translate(-50%);
   }
+
+  .missedCards {
+    position: relative;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%);
+  }
+
+
+  .missedCardsList {
+    position: absolute;
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .missedCardElement {
+    position: relative;
+    border: 2px solid black;
+    max-width: 25%;
+    display: flex;
+    overflow-wrap: break-word;
+  }
+
 
 
   .hide {
