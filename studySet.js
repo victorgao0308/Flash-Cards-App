@@ -413,7 +413,7 @@ endStudyBtn.addEventListener("click", () => {
 
 // skip to end of study session
 window.addEventListener("keydown", (e) => {
-  if (e.key === "s") {
+  if (e.key === "Escape") {
     counter = studyElements.length;
     slideCards(counter);
   }
@@ -456,6 +456,16 @@ function endStudySession() {
 
   // update the card statistics
   let oldSet = JSON.parse(localStorage.getItem(`SET: ${studySetId}`));
+
+  // keep the cards sorted
+  cards.sort((a, b) => {
+    const cardA = a.cardId;
+    const cardB = b.cardId;
+
+    if (cardA < cardB) return -1;
+    else return 1;
+  })
+
   oldSet.cards = cards;
   oldSet.timeStudied += Math.round(studySessionTime * 100) / 100;
   oldSet.timeStudied = Math.round(oldSet.timeStudied * 100) / 100;
